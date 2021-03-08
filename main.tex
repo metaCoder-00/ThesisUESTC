@@ -10,6 +10,11 @@ Digital Phased Array}
 \major{信号与信息处理}{Signal and Information Processing}
 \studentnumber{201821011229}
 
+\makeatletter
+\def\@hspace#1{\begingroup\setlength\skip@{#1}%
+    \edef\x{\endgroup\hskip\the\skip@\relax}\x}%
+\makeatletter
+
 \begin{document}
 
 \makecover
@@ -341,14 +346,14 @@ MVDR方法即最小方差无失真响应方法，本节我们将以单信源入�
 注意式\eqref{w_mu}中，只要干扰信号是非相干的，那么协方差矩阵$\bm{Q}$一定可逆。
 本小节中只存在一个期望信号，无干扰，而我们假设每个阵元的噪声都是独立同分布的高斯白噪声，
 此时矩阵$\bm{Q}$一定可逆。
-然后将式\eqref{w_mu}带入式\eqref{constraint}，我们可以得到拉格朗日乘子$\mu$。
+然后将式\eqref{w_mu}代入式\eqref{constraint}，我们可以得到拉格朗日乘子$\mu$。
 \begin{equation}\label{larg_arg}
     \begin{aligned}
     \mu = \frac{1}{\bm{a}^H(\phi_0)\bm{Q}^{-1}\bm{a}(\phi_0)}
     \end{aligned}
 \end{equation}
 
-最后，我们将式\eqref{larg_arg}带入\eqref{w_mu}，得到MVDR权向量的最优解$\bm{w}_o$。
+最后，我们将式\eqref{larg_arg}代入\eqref{w_mu}，得到MVDR权向量的最优解$\bm{w}_o$。
 \begin{equation}\label{w_solve}
     \begin{aligned}
     \bm{w}_o = \frac{\bm{Q}^{-1}\bm{a}(\phi_0)}{\bm{a}^H(\phi_0)\bm{Q}^{-1}\bm{a}(\phi_0)}
@@ -397,14 +402,14 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
     \bm{w} = \frac{1}{2}\bm{Q}^{-1}\bm{C}\bm{\mu}
     \end{aligned}
 \end{equation}
-注意，上式中的向量$\bm{\mu}$是拉格朗日乘子，然后将式\eqref{LCMV_w_mu}带入式\eqref{LCMV_constraint}中
+注意，上式中的向量$\bm{\mu}$是拉格朗日乘子，然后将式\eqref{LCMV_w_mu}代入式\eqref{LCMV_constraint}中
 得到
 \begin{equation}\label{LCMV_mu}
     \begin{aligned}
         \bm{\mu} = 2\left(\bm{C}^H\bm{Q}^{-1}\bm{C}\right)^{-1}\bm{f}
     \end{aligned}
 \end{equation}
-最后将式\eqref{LCMV_mu}带入式\eqref{LCMV_w_mu}得到LCMV的最优权向量$\bm{w}_o$，由式\eqref{LCMV_w_opt}表出。
+最后将式\eqref{LCMV_mu}代入式\eqref{LCMV_w_mu}得到LCMV的最优权向量$\bm{w}_o$，由式\eqref{LCMV_w_opt}表出。
 \begin{equation}\label{LCMV_w_opt}
     \begin{aligned}
         \bm{w}_o = \bm{Q}^{-1}\bm{C}\left(\bm{C}^H\bm{Q}^{-1}\bm{C}\right)^{-1}\bm{f}
@@ -522,7 +527,7 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
     \end{aligned}
 \end{equation}
 最后利用Taylor展开式将$\sin\phi_s$在$\phi_0$处展开，
-并舍弃二阶及其以上的高次项并带入式\eqref{MRC_proc}得到
+并舍弃二阶及其以上的高次项并代入式\eqref{MRC_proc}得到
 \begin{equation}\label{semi_MRC_fin}
     \begin{aligned}
         \text{MRC} = j\frac{\pi Md}{\lambda}\cos\phi_0\left(\phi_s-\phi_0\right)
@@ -879,41 +884,500 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 偏离角$\Delta\phi$。该方法不受限于阵列结构，可以用于共形阵单脉冲测向。
 但该方法与半阵法类似，和波束旁瓣电平仍然较高，无法应对强旁瓣干扰存在的场景。
 
-\chapter{基于旁瓣对消的单脉冲测向方法}
+\chapter{基于旁瓣对消和主瓣干扰置零的单脉冲测向方法}
 本章中，我们将介绍旁瓣对消波束形成方法及其在单脉冲测向场景中的应用。
 旁瓣对消方法通过设置一个阵元个数较主阵列小的子阵列，使得期望信号在该阵列上被阻塞，
 而旁瓣干扰可以无阻碍的通过，然后将主阵与子阵输出叠加，以此消除旁瓣干扰。
 由于辅助子阵的规模通常小于主阵列，因此该方法减小了计算量。
-我们首先介绍旁瓣对消的基本原理，然后给出一种基于拟矩阵和SVD的阻塞矩阵的设计方法，
+我们首先介绍旁瓣对消的基本原理，然后给出一种基于拟矩阵和SVD（奇异值分解）的阻塞矩阵的设计方法，
 最后介绍一种正交置零的主瓣干扰消除技术，并结合旁瓣对消，并将其用于单脉冲测向。
 
 \section{旁瓣对消基本原理}
-时域积分方程时间步进算法的阻抗元素直接影响算法的后时稳定性，因此阻抗元素的计算是算法的关键之一，采用精度高效的方法计算时域阻抗元素是时域积分方程时间步进算法研究的重点之一。
+旁瓣对消的基本流程如图\ref{GSC_process}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.8]{pic/GSC_process.pdf}
+    \caption{旁瓣对消流程示意图}
+    \label{GSC_process}
+\end{figure}
+在图\ref{GSC_process}中，向量$\bm{y}_m$和$\bm{y}_a$分别是主阵列和辅助阵列的阵元接收信号。
+辅助阵列接收信号$\bm{y}_a$通过阻塞矩阵$\bm{B}_a$后抑制期望信号$s(t)\bm{a}(\phi_s)$，
+而旁瓣干扰保留进入辅助阵列的波束形成器，最后利用加法器$z_m(n)-z_a(n)$得到输出$z(n)$，
+由于波束$z_m(n)$和$z_a(n)$中都含有旁瓣干扰，因此相互抵消，从而使得最终输出$z(n)$中不含有旁瓣干扰。
+下面我们将以均匀线阵为例，阐述旁瓣对消的过程和一般原理。
 
-\section{一种基于拟矩阵和SVD的阻塞矩阵设计方法}
-由于时域混合场积分方程是时域电场积分方程与时域磁场积分方程的线性组合，因此时域混合场积分方程时间步进算法的阻抗矩阵特征与时域电场积分方程时间步进算法的阻抗矩阵特征相同。时域阻抗元素的存储技术也是关键技术之一，采用合适的阻抗元素存储方式可以提高并行算法的计算效率。
+首先考虑一个$M_m+M_a$阵元的均匀线阵，阵元间距为半波长，入射信号波长为$\lambda$，
+主阵列为$M_m$阵元的子阵，辅助阵列为$M_a$阵元的子阵，并且它们的波束指向均为$\phi_0$。
+我们设期望信号入射方向与波束指向相同，即$\phi_0=\phi_s$，
+并且有$K$个旁瓣干扰信号，其角度分别为$\phi_1,\phi_2,\cdots,\phi_K$。
+由式\eqref{data_model}可以得到主阵列的输出信号$z_m(n)$和辅助阵列输出信号$z_a(n)$
+\begin{subequations}\label{gsc_data_model}
+    \begin{align}
+        \bm{y}_m(n) &= \bm{a}_m(\phi_0)s(n) + 
+                       \sum_{k=1}^{K}\bm{a}_m(\phi_k)s_k(n) + \bm{n}_m
+        \\
+        \bm{y}_a(n) &= \bm{a}_a(\phi_0)s(n) + 
+                       \sum_{k=1}^{K}\bm{a}_a(\phi_k)s_k(n) + \bm{n}_a
+    \end{align}
+\end{subequations}
+为简化符号，我们设
+\begin{subequations}\label{gsc_jamming}
+    \begin{align}
+        \bm{v}_m &= \sum_{k=1}^{K}\bm{a}_m(\phi_k)s_k(n) + \bm{n}_m
+        \\
+        \bm{v}_a &= \sum_{k=1}^{K}\bm{a}_a(\phi_k)s_k(n) + \bm{n}_a
+    \end{align}
+\end{subequations}
+利用式\eqref{gsc_data_model}和式\eqref{gsc_jamming}结合图\ref{GSC_process}分别得到
+旁瓣对消器的输出$z(n)$
+\begin{equation}\label{gsc_z}
+    \begin{aligned}
+        z(n) &= z_m(n) - z_a(n)
+        \\
+             &= \bm{w}^H_m\bm{a}_m(\phi_0)s(n) + \bm{w}^H_m\bm{v}_m - z_a(n)
+    \end{aligned}
+\end{equation}
+在式\eqref{gsc_z}中，旁瓣对消器要求辅助阵列输出$z_a(n)$不含有期望信号$s(n)$，
+否则将会使得最终输出$z(n)$中的期望信号分量随着旁瓣干扰一并抵消。
+因此，我们有必要设计一个阻塞矩阵$\bm{B}_a$，使得式\eqref{gsc_block}成立。
+\begin{equation}\label{gsc_block}
+    \begin{aligned}
+        \bm{B}_a\bm{a}_a(\phi_0)s(n) = \textbf{0}
+    \end{aligned}
+\end{equation}
+在第二节中，我们会介绍一种阻塞矩阵的设计方法。
+为后续公式的导出，我们这里先假设式\eqref{gsc_block}成立，
+此时辅助阵列的输出$z_a(n)$为
+\begin{equation}\label{gsc_z_a}
+    \begin{aligned}
+        z_a(n) = \bm{w}_a^H\left(\bm{B}_a\bm{a}_a(\phi_0)s(n) + \bm{B}_a\bm{v}_a\right)
+               = \bm{w}_a^H\bm{B}_a\bm{v}_a
+    \end{aligned}
+\end{equation}
+将式\eqref{gsc_z_a}代入式\eqref{gsc_z}我们得到
+\begin{equation}\label{gsc_out}
+    \begin{aligned}
+        z(n) = \bm{w}^H_m\bm{a}_m(\phi_0)s(n) + \bm{w}^H_m\bm{v}_m - \bm{w}_a^H\bm{B}_a\bm{v}_a
+    \end{aligned}
+\end{equation}
+对于旁瓣对消器的输出$\bm{z}(n)$，我们需要使得其干扰叠加噪声分量最小，因此构造代价函数$J(\bm{w}_a)$
+\begin{equation}\label{gsc_cost}
+    \begin{aligned}
+        J(\bm{w}_a) &= E\left\{\left|\bm{w}^H_m\bm{v}_m - \bm{w}^H_a\bm{B}_a\bm{v}_a\right|^2\right\}
+        \\
+                    &= \bm{w}_m^H\bm{Q}_{mm}\bm{w}_m - \bm{w}_m^H\bm{Q}_{ma}\bm{B}_a^H\bm{w}_a -
+                       \bm{w}_a^H\bm{B}_a\bm{Q}_{am}\bm{w}_m +
+                       \bm{w}_a^H\bm{B}_a\bm{Q}_{aa}\bm{B}_a^H\bm{w}_a
+    \end{aligned}
+\end{equation}
+式\eqref{gsc_cost}中，矩阵$\bm{Q}_{mm}$和$\bm{Q}_{aa}$表示主阵列自相关和辅助阵列自相关矩阵，
+矩阵$\bm{Q}_{am}$和$\bm{Q}_{ma}$表示主阵列与辅助阵列的互相关矩阵，其定义由式\eqref{gsc_cov_mat}给出。
+\begin{subequations}\label{gsc_cov_mat}
+    \begin{align}
+        \bm{Q}_{mm} &= E\left\{\bm{v}_m\bm{v}_m^H\right\}
+        \\
+        \bm{Q}_{aa} &= E\left\{\bm{v}_a\bm{v}_a^H\right\}
+        \\
+        \bm{Q}_{am} &= E\left\{\bm{v}_a\bm{v}_m^H\right\}
+        \\
+        \bm{Q}_{ma} &= E\left\{\bm{v}_m\bm{v}_a^H\right\}
+    \end{align}
+\end{subequations}
+对式\eqref{gsc_cost}中的代价函数$J(\bm{w}_a)$求梯度并令其等于零向量，
+我们可以得到辅助阵列权向量$\bm{w}_a$的最优解
+\begin{equation}\label{gsc_w_a}
+    \begin{aligned}
+        \bm{w}_a = \left(\bm{B}_a\bm{Q}_{aa}\bm{B}_a^H\right)^{-1}\bm{B}_a\bm{Q}_{am}\bm{w}_m
+    \end{aligned}
+\end{equation}
+注意，在整个推导过程中，我们假设主阵列权向量$\bm{w}_m$和阻塞矩阵$\bm{B}_a$都是已知的，
+并且自相关和互相关矩阵也可以由各态历经性从时间平均中得出。阻塞矩阵$\bm{B}_a$的选取通常是不唯一的，
+且对于不同的阵列，可能出现不同的结构，例如对于均匀线阵，其导向向量如式\eqref{sv_ULA}，
+一种可行的阻塞矩阵为式\eqref{simple_block}。
+\begin{equation}\label{simple_block}
+    \begin{aligned}
+        \bm{B}_a = \begin{bmatrix}
+                    \exp(j\varphi_0) & -1 & 0 & \cdots & 0 \\
+                    0 & \exp(j\varphi_0) & -1 \cdots 0 \\
+                    \vdots & \vdots & \ddots & \ddots & \vdots \\
+                    0 & \cdots & 0 & \exp(j\varphi_0) & -1
+                   \end{bmatrix}
+    \end{aligned}
+\end{equation}
+上式中，$\varphi_0=2\pi d\sin\phi_0/\lambda$且$\bm{B}_a\in\mathbb{C}^{(M_a-1)\times M_a}$，
+此时阻塞矩阵$\bm{B}_a$满足条件\eqref{gsc_block}。但我们注意到，辅助阵列的权向量$\bm{w}_a$
+此时也被限定为一个$(M_a-1)\times1$的向量，即辅助阵列的自由度会将为$M_a-1$。
+在随后的小节中，我们将介绍一种更为灵活的阻塞矩阵设计方式。
+
+\section{一种基于准矩阵和SVD的阻塞矩阵设计方法}
+本节我们将介绍一种灵活的阻塞矩阵设计方法，该方法Fernández等人15年提出\cite{Fernández}。
+该方法巧妙的利用了准矩阵和SVD设计阻塞矩阵，在本节中，我们将以均匀线阵为例，给出该方法的一般过程。
+
+首先考虑一个$M$阵元的均匀线阵，阵元间距为半波长，入射信号为远场窄带信号，波长为$\lambda$。
+我们设窄带波束为$\bm{b}(s)$，其对应的波束形成权向量为$\bm{x}$，
+由此可以得到式\eqref{block_beam_formula}。
+\begin{equation}\label{block_beam_formula}
+    \begin{aligned}
+        \bm{F}(s)\bm{x} = \bm{b}(s)
+    \end{aligned}
+\end{equation}
+上式中，$\bm{F}(s)$是$M$列的准矩阵，$\bm{b}(s)$是准向量。
+准矩阵$\bm{F}(s)$的第$m$列是一个连续函数，如式\eqref{f_m}所示。
+\begin{equation}\label{f_m}
+    \begin{aligned}
+        f_m(s) = \exp\left(j\pi(m-1)s\right)
+    \end{aligned}
+\end{equation}
+式\eqref{f_n}中，$n$表示矩阵$\bm{F}(s)$的第$n$列，而$-1\le s \le 1$为一个连续变量，
+表示阵列波束指向角的余弦值。而矩阵$\bm{F}(s)$的$k$行（作为准矩阵，实际上矩阵$\bm{F}(s)$有无穷多行）
+是对应角度余弦值为$s_k$的导向向量，即
+\begin{equation}\label{f_k}
+    \begin{aligned}
+        \bm{f}_k = \left[1, \exp\left(j\pi s_k\right), \exp\left(j\pi s_k\right), \cdots,
+                   \exp\left(j\pi(M-1)s_k\right)
+                   \right]
+    \end{aligned}
+\end{equation}
+准向量$\bm{b}(s)$的结构类似，表示整个空域$s$的波束。
+
+现在我们需要定义准向量的内积，考虑两个$[a,b] \times 1$维的准列向量$\bm{x}(s)$和$\bm{y}(s)$，
+我们定义其内积为式\eqref{inner_prod}。
+\begin{equation}\label{inner_prod}
+    \begin{aligned}
+        \bm{x}^H(s)\bm{y}(s) = \int_{a}^{b}x^*(s)y(s)ds
+    \end{aligned}
+\end{equation}
+上式中，$\cdot^*$表示共轭。我们注意到，准矩阵$\bm{F}(s)$实际上是一个列酉形矩阵，
+因此可以得到
+\begin{equation}\label{F_unitary}
+    \begin{aligned}
+        \bm{F}^H(s)\bm{F}(s) = \bm{P}
+    \end{aligned}
+\end{equation}
+式\eqref{F_unitary}中，矩阵$P$的第$m$行第$n$列元素定义为
+\begin{equation}\label{P_mn}
+    \begin{aligned}
+        P_{m,n} = \int_{-1}^{1}\exp\left(j\pi s(n-m)\right)ds = 2\operatorname{sinc}(n-m)
+    \end{aligned}
+\end{equation}
+结合式\eqref{F_unitary}和\eqref{P_mn}我们可以得到
+\begin{equation}\label{P_iden}
+    \begin{aligned}
+        \bm{P} = \bm{F}^H(s)\bm{F}(s) = 2\bm{I}
+    \end{aligned}
+\end{equation}
+利用式\eqref{P_iden}的结论，我们给准矩阵$\bm{F}(s)$的前面乘上一个系数$1/\sqrt{2}$，
+使之归一化。现在准矩阵$\bm{F}(s)$满足列酉矩阵特性了，即$\bm{F}^H(s)\bm{F}(s) = \bm{I}$，
+那么我们可以由式\eqref{block_beam_formula}及最小二乘法则构造优化问题
+\begin{equation}\label{block_opt_obj}
+    \begin{aligned}
+        &\min_\bm{x} ~ \left(\bm{F}(s)\bm{x}-\bm{b}(s)\right)^H\left(\bm{F}(s)\bm{x}-\bm{b}(s)\right)
+        \\
+        &\text{s.t.} ~ \bm{x} = \bm{F}^H(s)\bm{b}(s)
+    \end{aligned}
+\end{equation}
+式\eqref{block_opt_obj}中，向量$\bm{x}$的第$m$个元素由式\eqref{x_m}给出。
+\begin{equation}\label{x_m}
+    \begin{aligned}
+        x_m &= \frac{1}{\sqrt{2}}\int_{-1}^{1}b(s)\exp\left(-j\pi s (m-1)\right)ds
+        \\
+            &= \frac{1}{\sqrt{2}}\mathcal{F}\left\{\bm{b}(s)\right\}|_{f=(m-1)/2}
+    \end{aligned}
+\end{equation}
+上式中，$\mathcal{F}\left\{\cdot\right\}$表示傅里叶变换。
+
+现在，我们考虑设计一个阻塞矩阵，其阻带为$s_a\le s \le s_b$，此时结合式\eqref{block_opt_obj}，
+我们可以构造出代价函数
+\begin{equation}\label{block_cost}
+    \begin{aligned}
+        J(\bm{x},\bm{\mu}) = \left(\bm{F}(s)\bm{x}-\bm{b}(s)\right)^H\left(\bm{F}(s)\bm{x}-\bm{b}(s)\right)
+                    -\bm{\mu}^H\left(\bm{G}\bm{x}-\bm{d}\right)
+    \end{aligned}
+\end{equation}
+式\eqref{block_cost}中，$\bm{\mu}$表示$L$个元素的拉格朗日乘子，约束矩阵$\bm{G}$的第$l$行定义为
+\begin{equation}
+    \begin{aligned}
+        \bm{g}_l = \frac{1}{\sqrt{2}}\left[1,\exp\left(j\pi s_l\right), 
+                                           \exp\left(j\pi2 s_l\right), \cdots,
+                                           \exp\left(j\pi(M-1)s_l\right)
+                                      \right]
+    \end{aligned}
+\end{equation}
+我们对式\eqref{block_cost}中的代价函数$J(\bm{x},\bm{\mu})$求梯度，并令其为零，
+结合约束条件得到向量$\bm{x}$的解
+\begin{equation}\label{x_solution}
+    \begin{aligned}
+        \bm{x} = \left(\bm{I}-\bm{G}^H(\bm{G}\bm{G}^H)^{-1}\bm{G}\right)\bm{F}^H(s)\bm{b}(s) + 
+                 \bm{G}(\bm{G}\bm{G}^H)^{-1}\bm{d}
+    \end{aligned}
+\end{equation}
+对于阵列的固有静态波束形成器，我们有
+\begin{equation}\label{w_bf}
+    \begin{aligned}
+        \bm{b}(s) = \bm{F}(s)\bm{w}
+    \end{aligned}
+\end{equation}
+成立，将式\eqref{w_bf}代入\eqref{x_solution}，我们得到
+\begin{equation}\label{x_solution_w}
+    \begin{aligned}
+        \bm{x} = \left(\bm{I}-\bm{G}^H(\bm{G}\bm{G}^H)^{-1}\bm{G}\right)\bm{w} + 
+                 \bm{G}^H(\bm{G}\bm{G}^H)^{-1}\bm{d}
+    \end{aligned}
+\end{equation}
+式\eqref{x_solution_w}中，向量$\bm{w}$是阵列的静态权，比如选取波束指向处的导向向量
+$\bm{w}=\bm{a}(\phi_0)$或是第二章中介绍的Taylor权。现在，我们的目标转变为根据给定的要求，
+构造约束矩阵$\bm{G}$和约束向量$\bm{d}$。
+
+在本节中，我们的任务是构造一个满足要求的阻塞矩阵。因此，对于阻带$s_a\le s \le s_b$
+我们可以令约束向量$\bm{d}=\textbf{0}$。
+此时\eqref{x_solution_w}式被写为
+\begin{equation}\label{x_without_d}
+    \begin{aligned}
+        \bm{x} = \left(\bm{I}-\bm{G}^H(\bm{G}\bm{G}^H)^{-1}\bm{G}\right)\bm{w}
+    \end{aligned}
+\end{equation}
+为简化后续公式推导，可以定义投影矩阵$\bm{H}$
+\begin{equation}\label{block_proj_mat}
+    \begin{aligned}
+        \bm{H} = \left(\bm{I}-\bm{G}^H(\bm{G}\bm{G}^H)^{-1}\bm{G}\right)
+    \end{aligned}
+\end{equation}
+矩阵$\bm{H}$将向量$\bm{w}$投影到约束矩阵$\bm{G}$的零空间。
+
+我们假设共有$L$点用于形成波束指向的阻带。然后对约束矩阵$\bm{G}$做SVD得到
+\begin{equation}\label{G_SVD}
+    \begin{aligned}
+        \bm{G} = \bm{U}\bm{S}\bm{V}^H
+    \end{aligned}
+\end{equation}
+式\eqref{G_SVD}中，矩阵$\bm{U}\in\mathbb{C}^{L\times L}$和$\bm{V}\in\mathbb{C}^{M\times M}$
+都是酉矩阵，而矩阵$\bm{S}\in\mathbb{R}^{L\times M}_+$是一个拟对角矩阵，对角元为正奇异值和$0$，
+且一般情况下，按递减排序。因此我们可以将矩阵$\bm{V}$分块得到
+\begin{equation}\label{split_V}
+    \begin{aligned}
+        \bm{V} = \left[\bm{V}_1:\bm{V}_2\right]
+    \end{aligned}
+\end{equation}
+式\eqref{split_V}中，波束指向个数一般小于阵元数即$L\le M$。此时式\eqref{block_proj_mat}可以改写为
+\begin{equation}\label{block_proj_mat_V}
+    \begin{aligned}
+        \bm{H} = \bm{I} - \bm{V}_1\bm{V}_1^H = \bm{V}_2\bm{V}_2^H
+    \end{aligned}
+\end{equation}
+然后利用准矩阵$\bm{G}(s)$的性质，我们构造一个矩阵$\bm{P}_G\in\mathbb{C}^{M\times M}$
+\begin{equation}\label{P_G}
+    \begin{aligned}
+        \left[\bm{P}_G\right]_{m,n} &= \bm{G}^H(s)\bm{G}(s)
+                                     = \frac{1}{2}\int_{s_a}^{s_b}\exp\left(j\pi(n-m)s\right)ds
+        \\
+                                    &= \frac{s_b-s_a}{2}\exp\left(j\pi(n-m)(s_a+s_b)/2\right)
+                                       \operatorname{sinc}\left(\frac{(n-m)(s_b-s_a)}{2}\right)
+    \end{aligned}
+\end{equation}
+式\eqref{P_G}中，$[\cdot]_{m,n}$表示矩阵的第$m$行第$n$列元素，
+$s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
+我们可以进一步将式\eqref{P_G}改写为
+\begin{equation}\label{P_G_fract}
+    \begin{aligned}
+        \bm{P}_G = \bm{D}\hat{\bm{P}}_G\bm{D}^H
+    \end{aligned}
+\end{equation}
+上式中，矩阵$\bm{D}$是一个$M\times M$的对角酉矩阵，对角元为
+\begin{equation}\label{mat_D}
+    \begin{aligned}
+        D_{m,m} = \exp\left(j\pi(m-1)s_c\right)
+    \end{aligned}
+\end{equation}
+而半正定的Toeplitz矩阵$\hat{\bm{P}}_G$定义为
+\begin{equation}\label{mat_P_G_hat}
+    \begin{aligned}
+         \left[\bm{P}_G\right]_{m,n}=\frac{W}{2} \operatorname{sinc}\left(\frac{(n-m) W}{2}\right)
+    \end{aligned}
+\end{equation}
+式\eqref{mat_D}和\eqref{mat_P_G_hat}中，
+\begin{subequations}
+    \begin{align}
+        s_c &= (s_a + s_b)/2
+        \\
+        W &= (s_b - s_a)
+    \end{align}
+\end{subequations}
+上式中，$s_c$为阻带中心点，$W$为带宽。同样的，我们对矩阵$\bm{P}_G$做SVD并将式\eqref{G_SVD}代入得到
+\begin{equation}\label{P_G_svd}
+    \begin{aligned}
+        \bm{P}_G = \bm{V}\bm{S}^H\bm{S}\bm{V}^H 
+                 = \bm{D}\tilde{\bm{V}}\bm{S}^H\bm{S}\tilde{\bm{V}}^H\bm{D}^H
+    \end{aligned}
+\end{equation}
+式\eqref{P_G_svd}中，$\tilde{\bm{V}}\bm{S}^H\bm{S}\tilde{\bm{V}}^H$
+可以视作矩阵$\hat{\bm{P}}_G$的特征分解，且其特征值为实数。
+由于$\hat{\bm{P}}_G$是一个缺秩矩阵，因为一般情况下$L \ll M$，所以我们可以取$\bm{S}$的前$L$个
+大对角元构成矩阵$\bm{S}_L$将矩阵$\hat{\bm{P}}_G$近似为
+\begin{equation}\label{P_G_hat_approx}
+    \begin{aligned}
+        \hat{\bm{P}}_G \approx \tilde{\bm{V}}_1\bm{S}_L^2\tilde{\bm{V}}_1^H
+    \end{aligned}
+\end{equation}
+上式中，
+\begin{equation}
+    \begin{aligned}
+        \tilde{\bm{V}} = \left[\tilde{\bm{V}}_1:\tilde{\bm{V}}_2\right]
+    \end{aligned}
+\end{equation}
+因此我们得到
+\begin{equation}\label{V1_reformula}
+    \begin{aligned}
+        \bm{V}_1 = \bm{D}\tilde{\bm{V}}_1
+    \end{aligned}
+\end{equation}
+最后我们结合式\eqref{block_proj_mat_V}和\eqref{V1_reformula}得到投影矩阵
+\begin{equation}\label{proj_mat_approx}
+    \begin{aligned}
+        \bm{H} = \bm{I} - \bm{D}\tilde{\bm{V}}_1\tilde{\bm{V}}_1^H\bm{D}^H
+    \end{aligned}
+\end{equation}
+在给定阵列静态权$\bm{w}$的情况下，结合\eqref{x_without_d}和\eqref{block_proj_mat}
+以及\eqref{proj_mat_approx}式即可得到在波束指向$\phi_0$处产生阻带的权向量。
+在接下来的内容中，我们将以一个均匀线阵为例，展示该方法的阻塞矩阵效果。
+
+考虑一个$16$阵元的均匀线阵，阵元间距为半波长，波束指向为$\phi_0=0^\circ$，
+设定阻带为$-5^\circ$到$5^\circ$，对于式\eqref{P_G_hat_approx}中的近似，我们分别取$L=5$和$L=3$。
+此时阻塞矩阵形成的波束$\Sigma_b$与波束指向导向向量形成的波束$\Sigma$如图\ref{GSC_Block_dif_L}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.4]{pic/GSC_Block.eps}
+    \caption{阻塞矩阵形成的波束$\Sigma_b$}
+    \label{GSC_Block_dif_L}
+\end{figure}
+
+从图\ref{GSC_Block_dif_L}的结果中我们可以看出，该方法在$-5^\circ\le\phi\le5^\circ$处形成了阻带，
+且阻塞效果，即主瓣抑制比随着近似点数$L$的增加而增大，也就是说$L$越大，设计的阻塞矩阵效果越好。
 
 \section{正交置零主瓣干扰抑制方法}
-由于时域混合场积分方程是时域电场积分方程与时域磁场积分方程的线性组合，因此时域混合场积分方程时间步进算法的阻抗矩阵特征与时域电场积分方程时间步进算法的阻抗矩阵特征相同。
+在上文中，我们介绍了旁瓣对消器用于抑制旁瓣干扰，但在某些单脉冲测向的场景中，
+会在和波束的3dB主瓣内存在强干扰，但旁瓣对消器无法处理主瓣干扰。
+因此在本节中我们给出一种利用正交通道进行主瓣干扰置零的方法，该方法主要针对均匀面阵，
+可以有效的抑制主瓣干扰，由K. Yu等人提出\cite{Yu_01}。
 
-\begin{algorithm}[H]
-    \KwData{this text}
-    \KwResult{how to write algorithm with \LaTeX2e}
-    initialization\;
-    \While{not at end of this document}{
-        read current\;
-        \eIf{understand}{
-            go to next section\;
-            current section becomes this one\;
-        }{
-            go back to the beginning of current section\;
-        }
-    }
-    \caption{How to wirte an algorithm.}
-\end{algorithm}
+我们首先定义和波束$g_\Sigma(\cdot)$与差波束$g_\Delta(\cdot)$
+\begin{subequations}\label{URA_sigma_delta_g}
+    \begin{align}
+        g_\Sigma(T_s) = \bm{w}^H_\Sigma\bm{a}(T_s)
+        \\
+        g_\Delta(T_s) = \bm{w}^H_\Delta\bm{a}(T_s)
+    \end{align}
+\end{subequations}
+上式中，$T_s$为方向余弦。
+从式\eqref{subsv_URA}和\eqref{sv_URA}可以得知，面阵的导向向量的元素可以分解为两个正交方向上相位差的积。
+因此对于$xOy$平面上的均匀线阵，我们可以得到
+\begin{subequations}\label{URA_beams}
+    \begin{align}
+        g_{\Sigma}\left(T_{x}, T_{y}\right)=g_{\Sigma_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right) \\
+        g_{\Delta_{A}}\left(T_{x}, T_{y}\right)=g_{\Delta_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right) \\
+        g_{\Delta_{E}}\left(T_{x}, T_{y}\right)=g_{\Sigma_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right) \\
+        g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)=g_{\Delta_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right)
+    \end{align}
+\end{subequations}
+式\eqref{URA_beams}中，方向余弦$T_x=\sin\phi\cos\theta$，$T_y=\sin\phi\sin\theta$。
+$g_{\Sigma_{a}}$表示方位维的和波束，$g_{\Sigma_{e}}$表示俯仰维的和波束，
+$g_{\Delta_{a}}$表示方位维的差波束，$g_{\Delta_{a}}$表示俯仰维的差波束。
 
-由于时域混合场积分方程是时域电场积分方程与时域磁场积分方程的线性组合，
-因此时域混合场积分方程时间步进算法的阻抗矩阵特征与时域电场积分方程时间步进算法的阻抗矩阵特征相同。
+然后先考虑无干扰和噪声的情况。此时俯仰通道的单脉冲比$\eta_E$为
+\begin{equation}\label{MRC_E}
+    \begin{aligned}
+        \eta_{E}=\frac{P_{t} g_{\Delta_{E}}}{P_{t} g_{\Sigma}}
+                =\frac{P_{t} g_{\Sigma_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right)}
+                      {P_{t} g_{\Sigma_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right)}
+                =\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
+    \end{aligned}
+\end{equation}
+从式\eqref{MRC_E}中我们可以看出，俯仰方向上单通道的单脉冲比与双通道（即方位-俯仰维）单脉冲比相同。
+但是当我们假设有一个主瓣干扰源，其功率为$P_i$时，俯仰方向上的单脉冲比为
+\begin{equation}\label{MRC_E_jam}
+    \begin{aligned}
+        \eta_{E}&=\frac{P_{t} g_{\Delta_{E 1}}+P_{i} g_{\Delta_{E 2}}}{P_{t} g_{\Sigma 1}+P_{i} g_{\Sigma 2}} \\
+                &=\frac{P_{t} g_{\Sigma_{a1}}\left(T_{x}\right) g_{\Delta_{e 1}}\left(T_{y}\right)+P_{i} 
+                        g_{\Sigma_{a 2}}\left(T_{x}\right) g_{\Delta_{e 2}}\left(T_{y}\right)}
+                       {P_{t} g_{\Sigma_{a 1}}\left(T_{x}\right) g_{\Sigma_{e 1}}\left(T_{y}\right)+P_{i} 
+                        g_{\Sigma_{a 2}}\left(T_{x}\right) g_{\Delta_{e 2}}\left(T_{y}\right)} 
+                \neq \frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
+    \end{aligned}
+\end{equation}
+此时双通道单脉冲比和单通道单脉冲比不相等。从式\eqref{MRC_E_jam}中可以看出，若想去除干扰带来的影响，
+就必须使得$g_{\Sigma a2}(T_x)$尽可能的小。所以我们令干扰角度方向上的和波束$g_{\Sigma a}(T_x)$
+减去$w_a$倍的差波束，得到式\eqref{MRC_cancel_jam}。
+\begin{equation}\label{MRC_cancel_jam}
+    \begin{aligned}
+        \eta_E &= \frac{g_{\Delta_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-
+                        w_{a 2} g_{\Delta_{a}}\left(T_{x}\right)\right)}
+                       {g_{\Sigma_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-
+                        w_{a 1} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
+               &= \frac{g_{\Delta_{e}}\left(T_{y}\right) g_{\Sigma_{a}}\left(T_{x}\right)-
+                        w_{a 2} g_{\Delta_{e}}\left(T_{y}\right) g_{\Delta_{a}}\left(T_{x}\right)}
+                       {g_{\Sigma_{e}}\left(T_{y}\right) g_{\Sigma_{a}}\left(T_{x}\right)-
+                        w_{a 1} g_{\Sigma_{e}}\left(T_{y}\right) g_{\Delta_{a}}\left(T_{x}\right)} \\
+               &= \frac{g_{\Delta_{E}}-w_{a 2} g_{\Delta_{\Delta}}}{g_{\Sigma}-w_{a 1} g_{\Delta_{A}}}
+    \end{aligned}
+\end{equation}
+注意，在式子\eqref{MRC_cancel_jam}中，我们暂时省略掉了期望信号功率$P_t$与噪声功率$P_i$。
+
+现在将波束形成器的输出记为$r_{(\cdot)}$，俯仰维主瓣干扰置零后的自适应和差波束输出记为$\hat{r}_{\Sigma E}$和
+$\hat{r}_{\Delta E}$，他们由式\eqref{adp_out}给出。
+\begin{subequations}\label{adp_out}
+    \begin{align}
+        \hat{r}_{\Sigma_{E}}&=r_{\Sigma}-w_{a 1} r_{\Delta_{A}} \\
+        \hat{r}_{\Delta_{E}}&=r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}
+    \end{align}
+\end{subequations}
+利用式\eqref{adp_out}和最小均方误差原则，我们将主瓣干扰置零问题转化为优化问题
+\begin{subequations}
+    \begin{align}
+        &\min_{w_{a1}} ~ \left(r_{\Sigma}-w_{a 1} r_{\Delta_{A}}\right)^H
+                         \left(r_{\Sigma}-w_{a 1} r_{\Delta_{A}}\right)
+        \\
+        &\min_{w_{a2}} ~ \left(r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}\right)^H
+                         \left(r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}\right)
+    \end{align}
+\end{subequations}
+然后我们构造代价函数并求导令其为零，得到$w_{a1}$和$w_{a2}$的最优解
+\begin{subequations}\label{w_solves}
+    \begin{align}
+        w_{a 1}&=\frac{R_{\Sigma \Delta_{A}}}{R_{\Delta_{A} \Delta_{A}}} \\
+        w_{a 2}&=\frac{R_{\Delta_{E} \Delta_{\Delta}}}{R_{\Delta_{\Delta} \Delta_{\Delta}}}
+    \end{align}
+\end{subequations}
+式\eqref{w_solves}中，$R_{(\cdot)}$表示各波束通道输出结果的互相关，其定义由式\eqref{corr_r}给出。
+\begin{subequations}\label{corr_r}
+    \begin{align}
+        R_{\Sigma \Delta_{A}} &=E\left[r_{\Sigma} r_{\Delta_{A}}^{*}\right]
+                               =P_{J} g_{\Sigma}\left(T_{x}^{J}, T_{y}^{J}\right) 
+                                g_{\Delta_{A}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right) \\
+        R_{\Delta_{A} \Delta_{A}} &=E\left[r_{\Delta_{A}} r_{\Delta_{A}}^{*}\right]
+                                   =P_{J} g_{\Delta_{A}}\left(T_{x}^{J}, T_{y}^{J}\right) 
+                                    g_{\Delta_{A}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right)+P_N \\
+        R_{\Delta_{E} \Delta_{\Delta}} &=E\left[r_{\Delta_{E}} r_{\Delta_{\Delta}}^{*}\right]
+                                        =P_{J} g_{\Delta_{E}}\left(T_{x}^{J}, T_{y}^{J}\right) 
+                                         g_{\Delta_{\Delta}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right) \\
+        R_{\Delta_{\Delta} \Delta_{\Delta}} &=E\left[r_{\Delta_{\Delta}} r_{\Delta_{\Delta}}^{*}\right]
+                                             =P_{J} g_{\Delta_{\Delta}}\left(T_{x}^{J}, T_{y}^{J}\right) 
+                                             g_{\Delta_{\Delta}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right)+P_N
+    \end{align}
+\end{subequations}
+上式中，$P_J$和$P_N$分别表示主瓣干扰功率和噪声功率，$T_x^J$和$T_y^J$分别表示主瓣干扰的$x$轴方向余弦和$y$轴方向余弦，
+$\cdot^*$表示共轭。当干噪比JNR较大时，可以认为$w_{a1}$近似等于$w_{a2}$成立。但在实际情况中，两者可能并不相等。
+
+求得权值$w_{a1}$和$w_{a2}$后，得到俯仰维的自适应单脉冲比$\hat{f}_E$
+\begin{equation}\label{mrc_MLC}
+    \begin{aligned}
+        \hat{f}_{E}\left(T_{x}, T_{y}\right) &=\frac{\hat{g}_{\Delta_{E}}\left(T_{x}, T_{y}\right)}{\hat{g}_{\Sigma_{E}}\left(T_{x}, T_{y}\right)} \\
+        &=\frac{g_{\Delta_{E}}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)}{g_{\Sigma}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{A}}\left(T_{x}, T_{y}\right)} \\
+        &=\frac{g_{\Delta_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)}{g_{\Sigma_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
+        &=\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
+        \end{aligned}
+\end{equation}
+关于式\eqref{mrc_MLC}中的权值$w_a$，一种可行的方式是取$w_a=(w_{a1}+w_{a2})/2$。
+同理可得方位角通道的自适应单脉冲比$\hat{f}_A$，在此不做赘述。
+
+\section{单脉冲测向}
+
 \section{本章小结}
 本章首先研究了时域积分方程时间步进算法的阻抗元素精确计算技术，分别采用DUFFY变换法与卷积积分精度计算法计算时域阻抗元素，通过算例验证了计算方法的高精度。
 
