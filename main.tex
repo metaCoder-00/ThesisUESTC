@@ -216,7 +216,7 @@ $y$轴方向上的任意两相邻阵元间距均为$d_y$，如图\ref{URA}所示
 \end{equation}
 
 利用$\bm{r}_m$和入射信号角度可以计算出第$m$个阵元相对于参考点$O$的波程差，
-进一步得到均匀圆阵导向向量$\boldsymbol{a}\in\mathbb{C}^{M\times1}$。
+进一步得到均匀圆阵导向向量$\bm{a}\in\mathbb{C}^{M\times1}$。
 该导向向量的元素由式\eqref{sv_UCA}表出。
 \begin{equation}\label{sv_UCA}
     \begin{aligned}
@@ -989,6 +989,16 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
         \bm{w}_a = \left(\bm{B}_a\bm{Q}_{aa}\bm{B}_a^H\right)^{-1}\bm{B}_a\bm{Q}_{am}\bm{w}_m
     \end{aligned}
 \end{equation}
+最后我们结合图\ref{GSC_process}与式\eqref{gsc_z}得到广义旁瓣对消器的输出$z(n)$。
+\begin{equation}\label{gsc_fin_out}
+    \begin{aligned}
+        z(n) &= z_m(n) - z_a(n) \\
+             &= \bm{w}^H_m\bm{y}_m(n) - \bm{w}^H_a\bm{y}_a(n) \\
+             &= \bm{w}^H_m\bm{y}_m(n) - 
+                \left(\bm{B}_a\bm{Q}_{aa}\bm{B}_a^H\right)^{-1}\bm{B}_a\bm{Q}_{am}\bm{w}_m\bm{y}_a(n)
+    \end{aligned}
+\end{equation}
+
 注意，在整个推导过程中，我们假设主阵列权向量$\bm{w}_m$和阻塞矩阵$\bm{B}_a$都是已知的，
 并且自相关和互相关矩阵也可以由各态历经性从时间平均中得出。阻塞矩阵$\bm{B}_a$的选取通常是不唯一的，
 且对于不同的阵列，可能出现不同的结构，例如对于均匀线阵，其导向向量如式\eqref{sv_ULA}，
@@ -1376,31 +1386,533 @@ $\cdot^*$表示共轭。当干噪比JNR较大时，可以认为$w_{a1}$近似等
 关于式\eqref{mrc_MLC}中的权值$w_a$，一种可行的方式是取$w_a=(w_{a1}+w_{a2})/2$。
 同理可得方位角通道的自适应单脉冲比$\hat{f}_A$，在此不做赘述。
 
-\section{单脉冲测向}
+\section{两步法单脉冲测向}
+上面两个章节中，我们介绍了旁瓣对消和正交置零方法，分别用于消除旁瓣干扰和主瓣干扰。
+在本节中，我们将结合两者做自适应单脉冲测向。基本流程如图所示。
 
 \section{本章小结}
 本章首先研究了时域积分方程时间步进算法的阻抗元素精确计算技术，分别采用DUFFY变换法与卷积积分精度计算法计算时域阻抗元素，通过算例验证了计算方法的高精度。
 
 \chapter{相控阵的自适应单脉冲方法}
+本章中，我们将介绍一些自适应单脉冲测向方法。这些方法可以抑制主旁瓣干扰并用于共形阵。
+我们在本章第一节中介绍最大似然方法，第二节中介绍最小方差自适应单脉冲（MVAM）方法，
+第三节中介绍一种基于LCMV结构的线性约束单脉冲测向方法，第四节给出线性约束的改进型，SVD-线性约束方法。
+最后，在第五节中我们对这些算法的统计性能进行对比。
+
 \section{最大似然方法}
-时域积分方程时间步进算法的阻抗元素直接影响算法的后时稳定性，
-因此阻抗元素的计算是算法的关键之一，
-采用精度高效的方法计算时域阻抗元素是时域积分方程时间步进算法研究的重点之一。
+最大似然估计是一种自适应单脉冲测向方法，其核心在于利用已有的观测样本建立起似然函数$\mathcal{L}(\theta)$，
+然后求该似然函数的最大解，得到待估计参数$\hat{\theta}=\operatorname{argmax}~\mathcal{L}(\theta)$。
+U. Nickel 在 1993 年将该方法应用到了单脉冲系统中\cite{Nickel_93}。
+该方法的优势在于，不受限于具体的阵列形式，只要能够知道干扰叠加噪声的统计特性，就可以利用该方法进行求解。
+
+我们以一个$M$行$N$列的均匀面阵为例，分析该方法的导出过程。首先对于均匀面阵，我们可以利用式\eqref{data_model}和\eqref{sv_URA}
+得到其接收信号模型
+\begin{equation}\label{ML_data_model}
+    \begin{aligned}
+        \bm{y} = s(t)\bm{a}(\bm{\theta}) + \bm{n}
+    \end{aligned}
+\end{equation}
+式\eqref{ML_data_model}中，复数$s(t)$表示期望信号的振幅，向量$\bm{\theta}=\left[\theta,\phi\right]^T$表示入射角度，
+噪声向量$\bm{n}\in\mathbb{C}^{MN\times1}$表示
+各阵元的噪声（或干扰叠加噪声）。若假设噪声向量服从复高斯分布$\bm{n}\sim\mathcal{CN}\left(0,\bm{Q}\right)$， 
+则可知阵列接收数据的概率分布为$\bm{y}\sim\mathcal{CN}\left(s(t)\bm{a}(\bm{\theta}),\bm{Q}\right)$，
+进一步我们可以得到其概率密度函数为式\eqref{pdf_y}。
+\begin{equation}\label{pdf_y}
+    \begin{aligned}
+        p(\bm{y} \mid \bm{\theta}, s(t))=\pi^{-M}|\bm{Q}|^{-1} 
+        \exp \left[-[\bm{y}-s(t) \bm{a}(\bm{\theta})]^{H} \bm{Q}^{-1}[\bm{y}-s(t) \bm{a}(\bm{\theta})]\right]
+    \end{aligned}
+\end{equation}
+然后我们先对该密度函数取负对数似然，并去掉无关的常数部分，得到
+\begin{equation}\label{lf_trans}
+    \begin{aligned}
+        S(\bm{\theta}, s(t))=-\mathcal{L}(\bm{\theta}, s(t))
+        =[\bm{y}-s(t) \bm{a}(\bm{\theta})]^{H} \bm{Q}^{-1}[\bm{y}-s(t) \bm{a}(\bm{\theta})]
+    \end{aligned}
+\end{equation}
+首先对上式中的参数$s(t)$求最小二乘解得到
+\begin{equation}\label{least_square_s}
+    \begin{aligned}
+        s(t)=\left[\bm{a}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{a}(\bm{\theta})\right]^{-1} 
+        \bm{a}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{y}
+    \end{aligned}
+\end{equation}
+我们将式\eqref{least_square_s}带入\eqref{lf_trans}并去掉所有与参数$\bm{\theta}$无关的常数项得到其似然函数\eqref{lf}。
+\begin{equation}\label{lf}
+    \begin{aligned}
+        S(\bm{\theta})=\bm{y}^{H} \bm{Q}^{-1} \bm{a}(\bm{\theta})
+        \left[\bm{a}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{a}(\bm{\theta})\right]^{-1} 
+        \bm{a}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{y}
+    \end{aligned}
+\end{equation}
+为简化符号，定义$\bm{w}(\bm{\theta})$为自适应和波束权向量，由式\eqref{ml_w}表出。
+\begin{equation}\label{ml_w}
+    \begin{aligned}
+        \bm{w}(\bm{\theta})=
+        \left[\bm{a}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{a}(\bm{\theta})\right]^{-1 / 2} 
+        \bm{Q}^{-1} \bm{a}(\bm{\theta})
+    \end{aligned}
+\end{equation}
+将式\eqref{ml_w}代入\eqref{lf}，我们可以将似然函数$S(\bm{\theta})$重写为
+\begin{equation}
+    \begin{aligned}
+        S_{\mathrm{scan}}(\bm{\theta})=\left|\bm{w}^{H}(\bm{\theta}) \bm{y}\right|^{2}
+    \end{aligned}
+\end{equation}
+
+接下来我们求解似然函数。为便于求解，我们令$F(\bm{\theta})=\ln \left[S_{\mathrm{scan}}(\bm{\theta})\right]$。
+这样不改变似然函数的单调性，且期望信号方向的估计值$\hat{\bm{\theta}}$可以由式\eqref{ml_obj}给出。
+\begin{equation}\label{ml_obj}
+    \begin{aligned}
+        \hat{\bm{\theta}}=\arg\max_{\bm{\theta}} F(\bm{\theta})
+    \end{aligned}
+\end{equation}
+然后用牛顿梯度法给出对数似然函数$F(\bm{\theta})$的解，即式\eqref{newton_itr}。
+\begin{equation}\label{newton_itr}
+    \begin{aligned}
+        \hat{\bm{\theta}}=\bm{\theta}_0-\bm{H}^{-1} \nabla F(\bm{\theta})
+    \end{aligned}
+\end{equation}
+上式中，矩阵$\bm{H}=\nabla^2F(\bm{\theta})$是对数似然函数$F(\bm{\theta})$的海森矩阵。
+在牛顿法中，还需要一个初值$\bm{\theta}_0$，幸运的是，单脉冲测向系统中恰好可以用阵列波束指向$\bm{\theta}_0$作为初值。
+
+对于均匀面阵，其导向向量如式\eqref{subsv_URA}和\eqref{sv_URA}所示，为便于后续求导，我们可以将其改写为
+\begin{equation}\label{URA_sv_uv}
+    \begin{aligned}
+        \left[\bm{a}(\bm{\theta})\right]_i = \exp\left[j\frac{2\pi}{\lambda}(x_iu+y_iv)\right]
+    \end{aligned}
+\end{equation}
+式\eqref{URA_sv_uv}中，$x_i$和$y_i$表示第$i$个阵元（一般按列优先）的坐标，而参数$u$和$v$表示$x$和$y$方向上的方向余弦
+\begin{subequations}\label{uv_def}
+    \begin{align}
+        u &= \sin\phi\cos\theta \\
+        v &= \sin\phi\sin\theta
+    \end{align}
+\end{subequations}
+注意，此处我们假设均匀面阵位于$xOy$平面，若位于坐标系其他平面，则方向余弦$u$和$v$及阵元坐标可能不一样。
+现在，首先求对数似然函数关于的一阶偏导数，为简化符号，我们记一阶导数$F_u=\partial F/\partial u$。并且求导得
+\begin{equation}\label{F_u}
+    \begin{aligned}
+        F_u &= \frac{(S_\mathrm{scan})_u}{S_\mathrm{scan}} \\
+            &= \frac{\bm{w}^H_u\bm{y}\bm{y}^H\bm{w} + \bm{w}^H\bm{y}\bm{y}^H\bm{w}_u}{\bm{w}^H\bm{y}\bm{y}^H\bm{w}} \\
+            &= 2\mathrm{Re}\left\{\frac{\bm{w}^H_u\bm{y}}{\bm{w}^H\bm{y}}\right\}
+    \end{aligned}
+\end{equation}
+式\eqref{F_u}中，自适应和波束权向量$\bm{w}$的一阶导数$\bm{w}_u$定义如式\eqref{w_u}所示。
+\begin{equation}\label{w_u}
+    \begin{aligned}
+        \bm{w}_{u} &=\left(\bm{a}^{H} \bm{Q}^{-1} \bm{a}\right)^{-1 / 2} 
+        \bm{Q}^{-1} \bm{a}_{u}-\operatorname{Re}
+        \left\{\bm{a}_{u}^{H} \bm{Q}^{-1} \bm{a} / 
+        \bm{a}^{H} \bm{Q}^{-1} \bm{a}\right\} \bm{w} \\
+        &=\bm{d}_{x}-\mu_{x} \bm{w}
+    \end{aligned}
+\end{equation}
+上式中，
+\begin{subequations}\label{dx_nd_mu}
+    \begin{align}
+        \bm{d}_{x}&=\left(\bm{a}^{H} \bm{Q}^{-1} \bm{a}\right)^{-1 / 2}\bm{Q}^{-1} \bm{a}_{u} \\
+        \mu_x&=\operatorname{Re}\left\{\bm{a}_{u}^{H} \bm{Q}^{-1} \bm{a} / \bm{a}^{H} \bm{Q}^{-1} \bm{a}\right\}
+    \end{align}
+\end{subequations}
+我们定义向量$\bm{d}_{x}$为自适应差波束权向量，并且对于均匀面阵我们有
+\begin{equation}
+    \begin{aligned}
+        \left[\bm{a}_u\right]_i = j\frac{2\pi}{\lambda}x_i\exp\left[j\frac{2\pi}{\lambda}(x_iu+y_iv)\right]
+    \end{aligned}
+\end{equation}
+最后将式\eqref{w_u}代入\eqref{F_u}，得到一阶导数的最终表达式\eqref{F_u_fin}。
+\begin{equation}\label{F_u_fin}
+    \begin{aligned}
+        F_u = 2\left(\operatorname{Re}\left\{\frac{\bm{d}_x^H\bm{y}}{\bm{w}^H\bm{y}}\right\}-\mu_x\right)
+    \end{aligned}
+\end{equation}
+同理，我们可以得到对数似然函数$F(\bm{\theta})$关于$v$的一阶导数$F_v$，此处不做赘述。
+
+接下来我们求解$F$的二阶导数$F_{uu}$。为简化后续计算，我们此处导出二阶导数$F_{uu}(\bm{\theta}_{max})$的近似值。
+\begin{equation}\label{F_uu}
+    \begin{aligned}
+        F_{uu}(\bm{\theta}_{max}) &= 2\operatorname{Re}
+        \left\{\frac{\bm{w}^H_{uu}\bm{y}\bm{w}^H\bm{y}-\bm{w}^H_u\bm{y}\bm{w}^H_u\bm{y}}
+        {\left( \bm{w}^H\bm{y} \right)^2}\right\}(\bm{\theta}_{max}) \\
+        &= 2\operatorname{Re}\left\{\frac{\bm{w}^H_{uu}\bm{y}}{\bm{w}^H\bm{y}}\right\}(\bm{\theta}_{max}) - 
+           2\operatorname{Re}\left\{\left(\frac{\bm{w}^H_{u}\bm{y}}{\bm{w}^H\bm{y}}\right)^2\right\}(\bm{\theta}_{max})
+           \\
+        &= 2\operatorname{Re}\left\{\frac{\bm{w}^H_{uu}\bm{y}\bm{y}^H\bm{w}}
+                                    {\bm{w}^H\bm{y}\bm{y}^H\bm{w}}\right\}(\bm{\theta}_{max}) - 
+           2\operatorname{Re}\left\{\left(\frac{\bm{w}^H_{u}\bm{y}\bm{y}^H\bm{w}}
+                                    {\bm{w}^H\bm{y}\bm{y}^H\bm{w}}\right)^2\right\}(\bm{\theta}_{max})
+    \end{aligned}
+\end{equation}
+式\label{F_uu}中的第二项可以被改写为式\eqref{F_uu_2nd_term}。
+\begin{equation}\label{F_uu_2nd_term}
+    \begin{aligned}
+        \operatorname{Re}\left\{\left(\frac{\bm{w}^H_{u}\bm{y}\bm{y}^H\bm{w}}
+                                {\bm{w}^H\bm{y}\bm{y}^H\bm{w}}\right)^2\right\}(\bm{\theta}_{max})
+        = \frac{1}{\left(\bm{w}^H\bm{y}\bm{y}^H\bm{w}\right)^2}
+          \left(\operatorname{Re}^2\left\{\bm{w}^H_{u}\bm{y}\bm{y}^H\bm{w}\right\}-
+          \operatorname{Im}^2\left\{\bm{w}^H_{u}\bm{y}\bm{y}^H\bm{w}\right\}\right)
+    \end{aligned}
+\end{equation}
+首先，我们可以得到$\operatorname{Re}\left\{\bm{w}^H_{u}\bm{y}\bm{y}^H\bm{w}\right\}=0$，因为在最大值$\bm{\theta}_{max}$处，
+一阶导数$F_u(\bm{\theta}_{max})=0$。其次，对于具有对称性的阵列，
+有$\operatorname{Im}\left\{\bm{w}^H_{u}\bm{y}\bm{y}^H\bm{w}\right\}=0$成立，详情可见文献\cite{Nickel_93}。
+这样式\eqref{F_uu}中只剩下了第一项
+$2\operatorname{Re}\left\{\bm{w}^H_{uu}\bm{y}\bm{y}^H\bm{w}/\bm{w}^H\bm{y}\bm{y}^H\bm{w}\right\}(\bm{\theta}_{max})$。
+
+接下来，我们用数学期望$E\left\{\bm{z}\bm{z}^H\right\}$代替式\eqref{F_uu}中的$\bm{z}\bm{z}^H$。我们取
+\begin{equation}\label{ml_cov_mat}
+    \begin{aligned}
+        E\left\{\bm{z}\bm{z}^H\right\} = \beta^2\bm{a}(\bm{\theta}_s)\bm{a}^H(\bm{\theta}_s) + \bm{Q}
+    \end{aligned}
+\end{equation}
+式\eqref{ml_cov_mat}中，$\beta^2$为期望信号的功率，$\bm{\theta}_s$为期望信号的实际方向。
+而对于最大似然估计器，参数$\bm{\theta}$的估计是渐进无偏的，因此我们可以认为
+$\bm{a}(\bm{\theta}_s)\approx\bm{a}(\bm{\theta}_{max})$。并且结合\eqref{ml_w}式可知$\bm{w}^H\bm{Q}\bm{w}=1$。
+因此可以将式\eqref{F_uu}重写为式\eqref{F_uu_sim}。
+\begin{equation}\label{F_uu_sim}
+    \begin{aligned}
+        F_{uu} &= 2\operatorname{Re}\left\{
+            \frac
+            {
+                \beta^2\left(\bm{w}^H_{uu}\bm{a}+\bm{a}^H\bm{w}_{uu}\right)
+                \left(\bm{a}^H\bm{Q}^{-1}\bm{a}\right)^{1/2} +
+                \left(\bm{w}^H_{uu}\bm{a}+\bm{a}^H\bm{w}_{uu}\right)\left(\bm{a}^H\bm{Q}^{-1}\bm{a}\right)^{1/2}
+            }
+            {
+                \beta^2\left(\bm{a}^H\bm{Q}^{-1}\bm{a}\right) + 1
+            }
+        \right\} \\
+        &= \frac{\bm{w}^H_{uu}\bm{a}+\bm{a}^H\bm{w}_{uu}}{\left(\bm{a}^H\bm{Q}^{-1}\bm{a}\right)^{1/2}}
+    \end{aligned}
+\end{equation}
+为了简化记号，我们省略上式及后文中的$\bm{\theta}_{max}$。利用条件$\bm{w}^H\bm{a}\bm{a}^H\bm{w}\approx0$
+（同上文中式\eqref{F_uu_2nd_term}的化简），我们可以得到$\bm{d}^H_x\bm{a}=\mu_x\bm{w}^H\bm{a}$在$\bm{\theta}_{max}$
+处成立，同理可得俯仰维$\bm{d}^H_y\bm{a}=\mu_y\bm{w}^H\bm{a}$。利用这些关系我们可以得到
+\begin{subequations}\label{lf_2deri_trans}
+    \begin{align}
+        F_{uu} &= 2\operatorname{Re}^2
+        \left\{
+            \frac{\bm{a}^H_u\bm{Q}^{-1}\bm{a}}{\bm{a}^H\bm{Q}^{-1}\bm{a}}
+        \right\} - 
+        2\frac{\bm{a}^H_u\bm{Q}^{-1}\bm{a}_u}{\bm{a}^H\bm{Q}^{-1}\bm{a}} \\
+        F_{vv} &= 2\operatorname{Re}^2
+        \left\{
+            \frac{\bm{a}^H_v\bm{Q}^{-1}\bm{a}}{\bm{a}^H\bm{Q}^{-1}\bm{a}}
+        \right\} - 
+        2\frac{\bm{a}^H_v\bm{Q}^{-1}\bm{a}_v}{\bm{a}^H\bm{Q}^{-1}\bm{a}} \\
+        F_{uv} &= 2\operatorname{Re}
+        \left\{
+            \frac{\bm{a}^H_u\bm{Q}^{-1}\bm{a}}{\bm{a}^H\bm{Q}^{-1}\bm{a}}
+        \right\}
+        \operatorname{Re}
+        \left\{
+            \frac{\bm{a}^H_v\bm{Q}^{-1}\bm{a}}{\bm{a}^H\bm{Q}^{-1}\bm{a}}
+        \right\} - 
+        2\frac{\bm{a}^H_u\bm{Q}^{-1}\bm{a}_v}{\bm{a}^H\bm{Q}^{-1}\bm{a}}
+    \end{align}
+\end{subequations}
+
+注意，式\eqref{lf_2deri_trans}中仍然省略了$\bm{\theta}_{max}$。在单脉冲测向系统中，
+期望信号的真实方向$\bm{\theta}_s$往往处于波束指向$\bm{\theta}_0$的主瓣内，
+这意味着$\bm{\theta}_s$和$\bm{\theta}_0$较为接近，而最大似然估计器是一个渐进无偏估计器，
+我们可以认为$\bm{\theta}_{max}=\bm{\theta}_s$，因此可以取波束指向$\bm{\theta}_0$处的值代入式\eqref{lf_2deri_trans}
+作为近似。结合式\eqref{dx_nd_mu}我们可以得到对数似然函数$F$的二阶导数。
+\begin{subequations}\label{lf_2d}
+    \begin{align}
+        F_{uu} &= 2\mu^2_x - 2\frac{\bm{d}^H_x\bm{a}_u}{\bm{w}^H\bm{a}} \\
+        F_{vv} &= 2\mu^2_v - 2\frac{\bm{d}^H_y\bm{a}_v}{\bm{w}^H\bm{a}} \\
+        F_{uv} &= 2\mu_x\mu_y - 2\frac{\operatorname{Re}\left\{\bm{d}^H_x\bm{a}_v\right\}}{\bm{w}^H\bm{a}}
+    \end{align}
+\end{subequations}
+式\eqref{lf_2d}中，各参数取波束指向$\bm{\theta}_0$处的值。
+
+最后，我们可以利用式\eqref{lf_2d}构建海森矩阵$\bm{H}$。
+\begin{equation}\label{hessian_mat}
+    \begin{aligned}
+        \bm{H} = 
+        \begin{bmatrix}
+            F_{uu} & F_{uv} \\
+            F_{uv} & F_{vv}
+        \end{bmatrix}
+    \end{aligned}
+\end{equation}
+以及对数似然函数的梯度$\nabla F$，即雅可比矩阵
+\begin{equation}\label{jacobian_mat}
+    \begin{aligned}
+        \nabla F = \left[F_{u},F_{v}\right]^T
+    \end{aligned}
+\end{equation}
+结合牛顿公式\eqref{newton_itr}得到方向余弦的估计值$\hat{u}$和$\hat{v}$。
+\begin{equation}
+    \begin{aligned}
+        \left[\hat{u},\hat{v}\right]^T = \left[u_0, v_0\right]^T - \bm{H}^{-1}(\bm{\theta}_0)\nabla F(\bm{\theta}_0)
+    \end{aligned}
+\end{equation}
+最后利用反三角函数即可估计出期望信号的入射方向$\hat{\bm{\theta}}$。
 
 \section{MVAM方法}
-时域阻抗元素的存储技术也是时间步进算法并行化的关键技术之一，
-采用合适的阻抗元素存储方式可以很大的提高并行时间步进算法的计算效率。
+本节中，我们同样以$M$行$N$列的均匀面阵为例，解析MVAM方法的一般过程。
+首先信号模型同式\eqref{ML_data_model}一样。我们设单脉冲比为$R$，而无噪声的理想单脉冲比为$R_0$。
+它们由式\eqref{MVAM_MRC}给出。
+\begin{equation}\label{MVAM_MRC}
+    \begin{aligned}
+        R &= \frac{\bm{w}^H_\Delta\bm{y}}{\bm{w}^H_\Sigma\bm{y}}
+        = \frac{s(t)\bm{w}^H_\Delta\bm{a}(\bm{\theta}) + \bm{w}^H_\Delta\bm{n}}
+               {s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta}) + \bm{w}^H_\Sigma\bm{n}} \\
+        &= \left(
+                \frac{\bm{w}^H_\Delta\bm{a}(\bm{\theta})}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta})} + 
+                \frac{\bm{w}^H_\Delta\bm{n}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta})}
+           \right)
+           \left(1 + \frac{\bm{w}^H_\Sigma\bm{n}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta})}\right)^{-1} \\
+        &\approx \frac{\bm{w}^H\Delta\bm{a}(\bm{\theta})}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta})} + 
+                 \frac{\bm{w}^H_\Delta\bm{n}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta})} - 
+                 \frac{\bm{w}^H_\Delta\bm{a}(\bm{\theta})}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta})}
+                 \frac{\bm{w}^H_\Sigma\bm{n}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta})} \\
+        &= R_0(\bm{\theta}) + \frac{\bm{w}^H_\Delta\tilde{\bm{n}}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta})}
+    \end{aligned}
+\end{equation}
+上式中，向量$\bm{w}_\Sigma$和$\bm{w}_\Delta$分别是自适应和波束权向量与自适应差波束权向量
+（注意这里暂且没有区分方位角通道和俯仰角通道，而是给出一种通用形式）。
+与上一小节中一样，我们用向量$\bm{\theta}=\left[\theta,\phi\right]^T$表示信号的入射方向。
+而向量$\tilde{\bm{n}}$的定义为式\eqref{MVAM_n_tilde}。
+\begin{equation}\label{MVAM_n_tilde}
+    \begin{aligned}
+        \tilde{\bm{n}} = \bm{n} - 
+        \left(\frac{\bm{w}^H_\Sigma\bm{n}}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta})}\right)\bm{a}(\bm{\theta})
+    \end{aligned}
+\end{equation}
+
+理想单脉冲比$R_0(\bm{\theta})$可以视作是角度$\bm{\theta}$的非线性函数。若我们假设波束指向$\bm{\theta}_0=\textbf{0}$，
+类似的，这里将式\eqref{MVAM_MRC}中的参数$\bm{\theta}$重定义为方向余弦$u$和$v$的函数，
+即$\bm{\theta}=\bm{\theta}(u,v)$，然后得到在$\bm{\theta}_0$处的一阶泰勒展开
+\begin{equation}\label{MVAM_taylor_exp}
+    \begin{aligned}
+        R_0\left(u,v\right) &= \frac{\bm{w}^H_\Delta\bm{a}(\bm{\theta})}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta})} \\
+        &= \frac{\bm{w}^H_\Delta\bm{a}(\bm{\theta})}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta})}|_{\bm{\theta}=(0,0)} + 
+        u\left(
+            \frac
+            {
+                \bm{w}^H_\Sigma\bm{a}(\bm{\theta})\bm{w}^H_\Delta\bm{a}_u(\bm{\theta}) - 
+                \bm{w}^H_\Sigma\bm{a}_u(\bm{\theta})\bm{w}^H_\Delta\bm{a}(\bm{\theta})
+            }
+            {\left(\bm{w}^H_\Sigma\bm{a}(\bm{\theta})\right)^2}
+         \right)|_{\bm{\theta}=(0,0)} \\
+        &+
+        v\left(
+            \frac
+            {
+                \bm{w}^H_\Sigma\bm{a}(\bm{\theta})\bm{w}^H_\Delta\bm{a}_v(\bm{\theta}) - 
+                \bm{w}^H_\Sigma\bm{a}_v(\bm{\theta})\bm{w}^H_\Delta\bm{a}(\bm{\theta})
+            }
+            {\left(\bm{w}^H_\Sigma\bm{a}(\bm{\theta})\right)^2}
+         \right)|_{\bm{\theta}=(0,0)} 
+        + O\left((Mu)^2,(Nv)^2\right)
+    \end{aligned}
+\end{equation}
+式\eqref{MVAM_taylor_exp}中，$O(\cdot)$表示高阶无穷小。
+
+由于方向余弦$u$和$v$都是实数，因此我们可以将四个单脉冲等式及其共轭写为式\eqref{MVAM_MRC_trans}。
+\begin{equation}\label{MVAM_MRC_trans}
+    \begin{aligned}
+        \begin{bmatrix}
+            R_x - a_x \\
+            R_y - a_y \\
+            R_x^* - a_x^* \\
+            R_y^* - a_y^* 
+        \end{bmatrix} 
+        \approx
+        \begin{bmatrix}
+            B_{xx} & B_{xy} \\
+            B_{yx} & B_{yy} \\
+            B_{xx}^* & B_{xy}^* \\
+            B_{yx}^* & B_{yy}^*
+        \end{bmatrix}
+        \begin{bmatrix}
+            u_s \\ v_s
+        \end{bmatrix} + 
+        \begin{bmatrix}
+            n_x \\ n_y \\ n_x \\ n_y
+        \end{bmatrix} 
+        = 
+        \begin{bmatrix}
+            B_{xx} & B_{xy} \\
+            B_{yx} & B_{yy} \\
+            B_{xx}^* & B_{xy}^* \\
+            B_{yx}^* & B_{yy}^*
+        \end{bmatrix}
+        \begin{bmatrix}
+            \hat{u} \\ \hat{v}
+        \end{bmatrix}
+    \end{aligned}
+\end{equation}
+为简化符号，我们将式\eqref{MVAM_MRC_trans}重写为
+\begin{equation}\label{MVAM_R1_repres}
+    \begin{aligned}
+        \bm{R}_1 = \bm{B}_1\bm{u}_s + \bm{n}_1 = \bm{B}_1\hat{\bm{u}}
+    \end{aligned}
+\end{equation}
+在式\eqref{MVAM_R1_repres}中，$(\hat{u},\hat{v})$表示方向余弦的估计量，而$(u_s,v_s)$表示期望信号的方向余弦。
+噪声项则由式\eqref{MVAM_noise_vec}给出。
+\begin{subequations}\label{MVAM_noise_vec}
+    \begin{align}
+        n_x &= \frac{\bm{w}^H_{\Delta a}\tilde{\bm{n}}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta}_m)} \\
+        n_y &= \frac{\bm{w}^H_{\Delta e}\tilde{\bm{n}}}{s(t)\bm{w}^H_\Sigma\bm{a}(\bm{\theta}_m)}
+    \end{align}
+\end{subequations}
+上式中，$\bm{\theta}_m$表示单脉冲估计器的解。
+并且有
+\begin{subequations}\label{MVAM_B_a}
+    \begin{align}
+        &\bm{B} = 
+        \begin{bmatrix}
+            B_{xx} & B_{xy} \\
+            B_{yx} & B_{yy}
+        \end{bmatrix} = 
+        \begin{bmatrix}
+            \bm{w}^H_{\Delta a}\bm{c}_x & \bm{w}^H_{\Delta a}\bm{c}_y \\
+            \bm{w}^H_{\Delta e}\bm{c}_x & \bm{w}^H_{\Delta e}\bm{c}_y
+        \end{bmatrix} \\
+        &\begin{bmatrix}
+            a_x \\ a_y
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            \bm{w}^H_{\Delta a}\textbf{1} \\ \bm{w}^H_{\Delta e}\textbf{1}
+        \end{bmatrix} / \bm{w}^H_\Sigma\textbf{1}
+    \end{align}
+\end{subequations}
+式\eqref{MVAM_B_a}中，
+\begin{subequations}\label{MVAM_c_vec}
+    \begin{align}
+        \bm{c}_x &= \frac{\left(\bm{w}^H_\Sigma\textbf{1}\right)\bm{F}_x-
+                            \left(\bm{w}^H_\Sigma\bm{F}_x\right)\textbf{1}}
+                         {\left(\bm{w}^H_\Sigma\textbf{1}\right)^2} \\
+        \bm{c}_y &= \frac{\left(\bm{w}^H_\Sigma\textbf{1}\right)\bm{F}_y-
+                            \left(\bm{w}^H_\Sigma\bm{F}_y\right)\textbf{1}}
+                         {\left(\bm{w}^H_\Sigma\textbf{1}\right)^2} \\
+    \end{align}
+\end{subequations}
+上式中，
+\begin{subequations}
+    \begin{align}
+        \bm{F}_x &= \bm{a}_u|_{\bm{\theta}=\textbf{0}} \\
+        \bm{F}_y &= \bm{a}_v|_{\bm{\theta}=\textbf{0}} \\
+        \textbf{1} &= \bm{a}|_{\bm{\theta}=\textbf{0}}
+    \end{align}
+\end{subequations}
+与上一节中类似，我们用$\bm{a}_u$表示导向向量关于方向余弦$u$的一阶导数，注意此时我们假定了波束指向$\bm{\theta}_0=\textbf{0}$。
+而向量$\bm{w}_{\Delta a}$和$\bm{w}_{\Delta e}$分别表示方位角通道和俯仰角通道的自适应差波束权向量。
+
+接下来我们定义一个$4\times2$的单脉冲选择矩阵$\bm{\beta}_1$使之满足式\eqref{MVAM_select}。
+\begin{equation}\label{MVAM_select}
+    \begin{aligned}
+        \bm{\beta}_1^H\bm{B}_1=2\bm{I}_2
+    \end{aligned}
+\end{equation}
+上式中，$\bm{I}_2$表示$2\times2$的单位矩阵，此时式\eqref{MVAM_R1_repres}就可以被改写为
+\begin{equation}\label{MVAM_R1_beta_repres}
+    \begin{aligned}
+        \bm{\beta}^H_1\bm{R}_1 = 2\bm{u}_s + \bm{\beta}^H_1\bm{n}_1
+        = 2\bm{u}_s + 
+        \begin{bmatrix}
+            \bm{\beta}_{1u}^H \\ \bm{\beta}_{1v}^H
+        \end{bmatrix}
+        \bm{n}_1 = 2\hat{\bm{u}}
+    \end{aligned}
+\end{equation}
+从式\eqref{MVAM_R1_beta_repres}中我们容易得出，当噪声项教小时，方向余弦的估计值$\hat{\bm{u}}$就接近于真实值$\bm{u}_s$。
+所以我们可以关于方向余弦构造出两个优化问题
+\begin{equation}\label{MVAM_opt_obj}
+    \begin{aligned}
+        &\min ~ \bm{\beta}_{1u}^H\tilde{\bm{Q}}\bm{\beta}_{1u} \\
+        &\min ~ \bm{\beta}_{1v}^H\tilde{\bm{Q}}\bm{\beta}_{1v} \\
+        &\text{s.t.} ~ \bm{\beta}_1^H\bm{B}_1=2\bm{I}_2
+    \end{aligned}
+\end{equation}
+式\eqref{MVAM_opt_obj}中，
+\begin{equation}
+    \begin{aligned}
+        \tilde{\bm{Q}}=E\left\{\bm{n}_1\bm{n}_1^H\right\}
+    \end{aligned}
+\end{equation}
+假设噪声服从复高斯分布，那么对于任意的常向量$\bm{v}_1$和$\bm{v}_2$，都有式\eqref{MVAM_noise_exp}成立。
+\begin{equation}\label{MVAM_noise_exp}
+    \begin{aligned}
+        E\left\{\left(\bm{v}_1^H\tilde{\bm{n}}\right)\left(\bm{v}_2^H\tilde{\bm{n}}\right)\right\} = 0
+    \end{aligned}
+\end{equation}
+因此，$4\times4$的矩阵$\tilde{\bm{Q}}$可以被表示为
+\begin{equation}\label{MVAM_Q_tilde_frac}
+    \begin{aligned}
+        \tilde{\bm{Q}} = 
+        \begin{bmatrix}
+            \bm{Q}_1 & \textbf{0} \\
+            \textbf{0} & \bm{Q}_1^*
+        \end{bmatrix}
+    \end{aligned}
+\end{equation}
+上式中，$\cdot^*$表示共轭，且
+\begin{subequations}\label{MVAM_Q1}
+    \begin{align}
+        \bm{Q}_1 &= \bm{\Omega}^H\bm{Q}_t\bm{\Omega} \\
+        \bm{\Omega} &= \left[\bm{w}_{\Delta a}~\bm{w}_{\Delta e}\right]
+    \end{align}
+\end{subequations}
+而式\eqref{MVAM_Q1}中，矩阵$\bm{Q}_t$的定义如下
+\begin{equation}
+    \bm{Q}_t = E
+    \left\{
+        \left(\bm{n}-\frac{\bm{w}^H_\Sigma\bm{n}}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta}_s)}\bm{a}(\bm{\theta}_s)\right)
+        \left(\bm{n}-\frac{\bm{w}^H_\Sigma\bm{n}}{\bm{w}^H_\Sigma\bm{a}(\bm{\theta}_s)}\bm{a}(\bm{\theta}_s)\right)^H
+    \right\}
+\end{equation}
+由于此时波束指向$\bm{\theta}_0=\textbf{0}$，而在单脉冲测向系统中，期望信号的真实角度$\bm{\theta}_s$一般位于波束指向的3dB带宽内。
+所以我们可以将矩阵$\bm{Q}_t$近似为
+\begin{equation}
+    \begin{aligned}
+        \bm{Q} &\approx E
+        \left\{
+            \left(\bm{n}-\frac{\bm{w}^H_\Sigma\bm{n}}{\bm{w}^H_\Sigma\textbf{1}}\textbf{1}\right)
+            \left(\bm{n}-\frac{\bm{w}^H_\Sigma\bm{n}}{\bm{w}^H_\Sigma\textbf{1}}\textbf{1}\right)^H
+        \right\} \\
+        &=
+        \bm{Q} - \frac{\textbf{1}\bm{w}^H_\Sigma}{\bm{w}^H_\Sigma\textbf{1}}\bm{Q} -
+        \bm{Q}\frac{\bm{w}_\Sigma\textbf{1}^H}{\textbf{1}^H\bm{w}_\Sigma} + 
+        \frac{\textbf{1}\textbf{1}^H}{\left|\bm{w}^H_\Sigma\textbf{1}\right|^2}\bm{w}^H_\Sigma\bm{Q}\bm{w}_\Sigma
+    \end{aligned}
+\end{equation}
+
+最后，我们将式\eqref{MVAM_Q_tilde_frac}代入优化问题\eqref{MVAM_opt_obj}，
+解得矩阵$\bm{\beta}_1$的前两行$\bm{\beta}$
+\begin{equation}\label{MVAM_beta_solve}
+    \begin{aligned}
+        \bm{\beta} = \bm{Q}^{-1}_1\bm{B}
+        \left(\operatorname{Re}\left\{\bm{B}^H\bm{Q}^{-1}_1\bm{B}\right\}\right)^{-1}
+    \end{aligned}
+\end{equation}
+并求解得到方向余弦估计量$\hat{\bm{u}}$的表达式。
+\begin{equation}\label{MVAM_estimator}
+    \begin{aligned}
+        \hat{\bm{u}} = \operatorname{Re}
+        \left\{
+            \left(\operatorname{Re}\left\{\bm{B}^H\bm{Q}^{-1}_1\bm{B}\right\}\right)^{-1}
+            \bm{B}^H\bm{Q}^{-1}_1\bm{R}
+        \right\}
+    \end{aligned}
+\end{equation}
+式\eqref{MVAM_beta_solve}和\eqref{MVAM_estimator}中，矩阵$\bm{B}$和$\bm{R}$分别是矩阵$\bm{B}_1$和$\bm{R}_1$的前两行。
 
 \section{线性约束方法}
 由于时域混合场积分方程是时域电场积分方程与时域磁场积分方程的线性组合，
 因此时域混合场积分方程时间步进算法的阻抗矩阵特征与时域电场积分方程时间步进算法的阻抗矩阵特征相同。
 
 \section{SVD-线性约束}
-如表\ref{tablea}所示给出了时间步长分别取0.4ns、0.5ns、0.6ns 时的三种存储
 方式的存储量大小。
 
 \section{本章小结}
 结
+
 \chapter{极化相控阵的单脉冲测向方法}
 
 \section{极化相控阵接收信号模型}
