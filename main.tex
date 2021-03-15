@@ -2264,7 +2264,7 @@ MVAM方法预设理想的单脉冲比，然后在波束指向处进行一阶泰�
 \subsection{极子摆放方式相同时的阵列接收信号模型}
 
 \subsection{极子摆放方式不同时的阵列接收信号模型}
-首先我们考虑一个横电磁波（TEM）入射到一个共形阵上，共形阵的天线由各个不同朝向的（电）偶极子构成，
+首先我们考虑一个波长为$\lambda$的横电磁波（TEM）入射到一个共形阵上，共形阵的天线由各个不同朝向的（电）偶极子构成，
 如图\ref{polarized_array}所示。
 \begin{figure}[h]
     \includegraphics[scale=0.8]{pic/polarized_array.pdf}
@@ -2343,7 +2343,7 @@ $\bm{\epsilon}_v$两两正交，且构成一个直角坐标系。
 现在，我们来推导由不同朝向极子组成的极化阵列的导向向量。在这个模型中，阵列的响应由两部分组成：
 第一部分是阵元位置相对于参考点而引起的相移；第二部分是由入射信号的极化模式引起的相移，
 它由极子的朝向，信号的入射方向以及信号的极化参数共同决定。为了不失一般性，
-我们可以假设一个完全极化的电磁横波，极化参数为$(\gamma,\eta)$，以$\bm{\theta}=\left[\theta,\phi\right]^T$
+我们可以假设一个完全极化的电磁横波，极化参数为$(\gamma,\eta)$，以$(\theta,\phi)$
 入射到一个由$M$个短偶极子组成的共形阵上，其中，阵列的第$m$个极子的坐标由位置向量$\bm{r}_m$决定，第$m$个极子
 的朝向由$(\alpha_m,\beta_m)$决定。此时，第$m$个极子的响应为$a_m(\theta,\phi,\gamma,\eta)$，
 它由式\eqref{polar_dipole_response}给出。
@@ -2353,8 +2353,45 @@ $\bm{\epsilon}_v$两两正交，且构成一个直角坐标系。
         u_{m} \bm{g}_{m}^{T}\left[\bm{\epsilon}_{h}, \bm{\epsilon}_{v}\right] \bm{h}
     \end{aligned}
 \end{equation}
+注意，上式中我们省略了电场极化的强度量$\zeta(t)$和极子完全匹配时的增益$\kappa$，这是因为我们假设入射信号为远场信号，
+而远场信号对于短时延$\tau$满足$\zeta(t-\tau)\approx\zeta(t)$。
+且组成阵列的每个极子都是完全相同的，即每个极子的$\kappa$都相同，这样对于同一个入射信号，每个极子接收到的$\zeta(t)$
+和$\kappa$都是一致的，所以我们省略这两个和强度有关的量并不影响最终的结果。
+式\eqref{polar_dipole_response}中，$u_m$表示第$m$个极子的空域相移，由式\eqref{polar_spatial_pd}给出。
+\begin{equation}\label{polar_spatial_pd}
+    \begin{aligned}
+        u_{m}=\exp \left(-j \frac{2 \pi}{\lambda} \bm{r}_{m}^{T} \bm{\epsilon}_{p}\right)
+    \end{aligned}
+\end{equation}
+接着，将式\eqref{polar_dipole_response}改写为向量形式，得到极化阵列的导向向量
+\begin{equation}\label{polar_sv}
+    \begin{aligned}
+        \bm{a}(\theta, \varphi, \gamma, \eta)=
+        \operatorname{diag}\left\{\bm{a}_{\bm{s}}(\theta, \varphi)\right\} 
+        \bm{G}\left[\bm{\epsilon}_{h}, \bm{\epsilon}_{v}\right] \bm{h}
+    \end{aligned}
+\end{equation}
+我们将式\eqref{polar_sv}中的向量$\bm{a}_s(\theta,\phi)$称为空域导向向量，它的定义由式\eqref{polar_spatial_sv}给出。
+\begin{equation}\label{polar_spatial_sv}
+    \begin{aligned}
+        \bm{a}_{s}(\theta, \varphi)=\left[u_{1}, u_{2}, \cdots, u_{M}\right]^{T}
+    \end{aligned}
+\end{equation}
+而矩阵$\bm{G}$由$M$个向量构成，如式\eqref{dipole_mat}。
+\begin{equation}\label{dipole_mat}
+    \begin{aligned}
+        \bm{G}=\left[\bm{g}_{1}, \bm{g}_{2}, \cdots, \bm{g}_{M}\right]^{T}
+    \end{aligned}
+\end{equation}
+最终，对于一个复振幅为$s(t)$的入射信号，阵列接收的数据$\bm{y}$可以由式\eqref{polar_data}表出。
+\begin{equation}\label{polar_data}
+    \begin{aligned}
+        \bm{y}=s(t) \bm{a}(\theta, \phi, \gamma, \eta)+\bm{n}
+    \end{aligned}
+\end{equation}
+上式中，向量$\bm{n}$表示噪声（或干扰叠加噪声）向量。
 
-\section{各阵元摆放角度一致的极化相控阵单脉冲测向}
+\section{极子摆放方式相同时的极化相控阵单脉冲测向}
 时域积分方程方法的研究近几年发展迅速，在本文研究工作的基础上，仍有以下方向值得进一步研究：
 
 \subsection{原理}
@@ -2363,9 +2400,248 @@ $\bm{\epsilon}_v$两两正交，且构成一个直角坐标系。
 
 \subsection{仿真}
 
-\section{各阵元摆放角度不同的极化相控阵单脉冲测向}
+\section{极子摆放方式不同时的极化相控阵单脉冲测向}
+当组成阵列的极子朝向各不相同时，导向向量中的空域时延$\bm{a}_s(\theta,\phi)$无法和极化导致的幅相变化分离，
+因此传统的测向方法无法直接应用到该模型下，所以本节中我们从信号模型的统计信息入手，借助似然函数完成单脉冲测向过程，
+并在得到入射信号的角度信息后给出一种极化参数的估计方法。
 
-\subsection{原理}
+\subsection{基本原理}
+我们假设一个由$M$个极子组成的极化阵列，$M$个极子的摆放方式由矩阵$\bm{G}$决定，
+一个极化参数为$(\gamma,\eta)$的远场窄带信号以角度$(\theta,\phi)$入射到该阵列上。
+
+首先可以假设干扰叠加噪声向量$\bm{n}$服从一个均值为零，协方差矩阵为$\bm{Q}\in\mathbb{C}^{M\times M}$的复高斯分布，
+即$\bm{n}\sim\mathcal{CN}(0,\bm{Q})$。在该假设下，接收信号$\bm{y}$的概率密度函数可以写为
+\begin{equation}\label{polar_pdf}
+    \begin{aligned}
+        p(\bm{y} \mid \bm{\theta}, \gamma, \eta, s(t))= 
+        \frac{1}{\pi^{M} \operatorname{det}(\bm{Q})} \exp 
+        \left\{
+            -[\bm{y}-s(t) \bm{a}(\bm{\theta})]^{H} 
+            \bm{Q}^{-1}[\bm{y}-s(t) \bm{a}(\bm{\theta})]
+            \right\}
+    \end{aligned}
+\end{equation}
+然后对式\eqref{polar_pdf}中的概率密度函数取自然对数并舍弃掉所有常量得到
+\begin{equation}\label{log_lf}
+    \begin{aligned}
+        \mathcal{L}(\bm{\theta}, \gamma, \eta, s(t)) &=
+        \ln p(\bm{y} \mid \bm{\theta}, \gamma, \eta, s(t)) \\
+        &=-[\bm{y}-s(t) \bm{a}(\bm{\theta},\gamma,\eta)]^{H} \bm{Q}^{-1}[\bm{y}-s(t) \bm{a}(\bm{\theta,\gamma,\eta})]
+    \end{aligned}
+\end{equation}
+式\eqref{log_lf}中，向量$\bm{\theta}=\left[\theta,\phi\right]^T$表示期望信号的入射角度。
+我们感兴趣的部分是期望信号的入射角度$\bm{\theta}$，所以我们需要导出一个仅关于参数$\bm{\theta}$的对数似然函数。
+因此我们定义矩阵$\bm{A}\in\mathbb{C}^{M\times2}$和向量$\bm{s}\in\mathbb{C}^{2\times1}$。
+\begin{subequations}\label{polar_A_nd_s}
+    \begin{align}
+            \bm{A}(\theta, \varphi) &=
+            \operatorname{diag}\left\{\bm{a}_{s}(\theta, \varphi)\right\} \bm{G}
+            \left[\bm{\epsilon}_{h}, \bm{\epsilon}_{v}\right] \\
+            \bm{s}(\gamma, \eta) &=s(t) \bm{h}=\left[s(t) \cos \gamma, s(t) e^{j \eta} \sin \gamma\right]^{T}
+    \end{align}
+\end{subequations}
+然后将式\eqref{polar_A_nd_s}代入\eqref{log_lf}得到
+\begin{equation}\label{polar_log_lf_As}
+    \begin{aligned}
+        \mathcal{L}(\bm{\theta}, \bm{s})=
+        -[\bm{y}-\bm{A} \bm{s}]^{H}{\bm{Q}}^{-1}[\bm{y}-\bm{A} \bm{s}]
+    \end{aligned}
+\end{equation}
+与最大似然方法类似，我们对向量$\bm{s}$求最小二乘解得到其估计量$\hat{\bm{s}}$。
+\begin{equation}\label{polar_s_hat}
+    \begin{aligned}
+        \hat{\bm{s}}=
+        \left[\bm{A}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{A}(\bm{\theta})\right]^{-1} 
+        \bm{A}^{H}(\bm{\theta}) \bm{Q}^{-1} \bm{y}
+    \end{aligned}
+\end{equation}
+接着将式\eqref{polar_s_hat}代入\eqref{polar_log_lf_As}，并去掉常数项，
+得到关于期望信号入射角度$\bm{\theta}$的对数似然函数$\mathcal{L}(\bm{\theta})$。
+\begin{equation}\label{polar_lf}
+    \begin{aligned}
+        \mathcal{L}(\bm{\theta})=
+        \bm{y}^{H} \bm{Q}^{-1} \bm{A}
+        \left(\bm{A}^{H} \bm{Q}^{-1} \bm{A}\right)^{-1} \bm{A}^{H} \bm{Q}^{-1} \bm{y}
+    \end{aligned}
+\end{equation}
+现在，我们就可以将角度估计问题转化为一个优化问题，即式\eqref{polar_lf_opt}。
+\begin{equation}\label{polar_lf_opt}
+    \begin{aligned}
+        &\max_{\bm{\theta}} ~ \mathcal{L}(\bm{\theta}) \\
+        &\text{s.t.} ~ -\pi\leqslant\theta, 0\leqslant\phi\leqslant\pi
+    \end{aligned}
+\end{equation}
+
+我们注意到，式\eqref{polar_lf}中的矩阵$\left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1}$是一个Hermite矩阵，
+因此我们易知它的矩阵平方根一定存在。利用该性质，我们可以将式\eqref{polar_lf}重写为
+\begin{equation}\label{polar_lf_W}
+    \begin{aligned}
+        \mathcal{L}(\bm{\theta}) = \bm{y}^H\bm{W}(\bm{\theta})\bm{W}^H(\bm{\theta})\bm{y}
+    \end{aligned}
+\end{equation}
+上式中，矩阵$\bm{W}(\bm{\theta})\in\mathbb{M\times2}$定义为
+\begin{equation}\label{polar_W_mat}
+    \begin{aligned}
+        \bm{W}(\bm{\theta}) = \bm{Q}^{-1}\bm{A}(\bm{\theta})
+        \left(\bm{A}^H(\bm{\theta})\bm{Q}^{-1}\bm{A}(\bm{\theta})\right)^{-1/2}
+    \end{aligned}
+\end{equation}
+注意在式\eqref{polar_W_mat}中上标$\cdot^{1/2}$表示矩阵平方根。我们易知$\mathcal{L}(\bm{\theta})$是一个凹函数，
+即它在定义域上有全局最大值，并且它是严格大于0的。
+
+为便于后续的公式推导，我们对\eqref{polar_lf_W}式中的$\mathcal{L}(\bm{\theta})$取自然对数得
+$F(\bm{\theta})=\ln\mathcal{L}(\bm{\theta})$，这样并不改变它的单调性和凹凸性。
+与第四章中的最大似然方法类似，我们给出牛顿公式，即式\eqref{polar_newton_itr}。
+\begin{equation}\label{polar_newton_itr}
+    \hat{\bm{\theta}} = \bm{\theta}_0 - \bm{H}^{-1}\nabla F(\bm{\theta})
+\end{equation}
+上式中，向量$\bm{\theta}_0$表示待估计角度$\bm{\theta}$的初值，矩阵$\bm{H}$表示函数$F(\bm{\theta})$的海森矩阵，
+$\nabla F(\bm{\theta})$表示函数$F(\bm{\theta})$的梯度，即雅可比矩阵。它们的定义由式\eqref{polar_Hessian_Jacb}给出。
+\begin{subequations}\label{polar_Hessian_Jacb}
+    \begin{align}
+        \bm{H} &=
+        \begin{bmatrix}
+            F_{\theta\theta} & F_{\theta\phi} \\
+            F_{\theta\phi}   & F_{\phi\phi}
+        \end{bmatrix} \\
+        \nabla F(\bm{\theta}) &= \left[F_\theta,F_\phi\right]^T
+    \end{align}
+\end{subequations}
+式中，$F_\theta$表示一阶偏导数$\partial F/\partial\theta$，而$F_{\theta\phi}$表示二阶偏导数$\partial^2 F/\partial\theta\phi$，
+其余同理。
+牛顿法要求一个初值才能进行估计，幸运的是，在单脉冲测向系统中，我们恰好有一个波束指向角$\bm{\theta}_0$。
+期望信号的真实方向$\bm{\theta}_s$往往与波束指向角接近（一般在3dB主瓣宽度内），所以我们可以用单步迭代的方式代替多步迭代
+以减小计算量。剩下的部分我们将着重于$\bm{F}(\bm{\theta})$一二阶偏导数的导出。
+
+利用式\eqref{polar_lf_W}可以得到一阶偏导数$F_\theta$。
+\begin{equation}\label{polar_F_theta}
+    \begin{aligned}
+        F_\theta &= 
+        \frac{\bm{y}^H\bm{W}_\theta\bm{W}^H\bm{y} + \bm{y}^H\bm{W}\bm{W}^H_\bm{\theta}\bm{y}}
+        {\bm{y}^H\bm{W}\bm{W}^H\bm{y}} \\
+        &= 2\frac{\operatorname{Re}\left\{\bm{y}^H\bm{W}_\theta\bm{W}^H\bm{y}\right\}}
+        {\bm{y}^H\bm{W}\bm{W}^H\bm{y}}
+    \end{aligned}
+\end{equation}
+式\eqref{polar_F_theta}中，矩阵$\bm{W}_\theta$的定义如下。
+\begin{equation}\label{polar_W_theta}
+    \begin{aligned}
+        \bm{W}_\theta = 
+        \bm{Q}^{-1}\bm{A}_\theta\left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1/2} - 
+        \bm{W}\left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1}
+        \operatorname{Re}\left\{\bm{A}^H_\theta\bm{Q}^{-1}\bm{A}\right\}
+    \end{aligned}
+\end{equation}
+为了简化符号，我们给出定义式\eqref{polar_D_mu_def}。
+\begin{subequations}\label{polar_D_mu_def}
+    \begin{align}
+        \bm{D}^{\theta} &= \bm{Q}^{-1}\bm{A}_\theta\left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1/2} \\
+        \bm{\mu}^\theta &= \left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1}
+        \operatorname{Re}\left\{\bm{A}^H_\theta\bm{Q}^{-1}\bm{A}\right\}
+    \end{align}
+\end{subequations}
+然后将式\eqref{polar_D_mu_def}代入\eqref{polar_W_theta}得到
+\begin{equation}
+    \begin{aligned}
+        \bm{W}_\theta = \bm{D}^\theta - \bm{W}\bm{\mu}^\theta
+    \end{aligned}
+\end{equation}
+在式\eqref{polar_W_theta}和\eqref{polar_D_mu_def}中，导数$\bm{A}_\theta$的定义由式\eqref{polar_A_theta}给出。
+\begin{equation}\label{polar_A_theta}
+    \begin{aligned}
+        \bm{A}_\theta = 
+        \operatorname{diag}\left\{\frac{\bm{a}_s(\theta,\phi)}{\partial\theta}\right\}
+        \bm{G}\left[\bm{\epsilon}_h,\bm{\epsilon}_v\right] + 
+        \operatorname{diag}\left\{\bm{a}_s(\theta,\phi)\right\}\bm{G}
+        \left[\frac{\partial\bm{\epsilon}_h}{\partial\theta},\frac{\partial\bm{\epsilon}_v}{\partial\theta}\right]
+    \end{aligned}
+\end{equation}
+上式中，$\partial\bm{a}_s(\theta,\phi)/\partial\theta$和
+$\left[\partial\bm{\epsilon}_h/\partial\theta,\partial\bm{\epsilon}_v/\partial\theta\right]$的定义如下。
+\begin{subequations}\label{polar_a_s_nd_epsilon_theta}
+    \begin{align}
+        \left[\frac{\partial\bm{a}_s(\theta,\phi)}{\partial\theta}\right]_m &= 
+        -j\frac{2\pi}{\lambda}\bm{r}^T_m\frac{\partial\bm{\epsilon}_p}{\partial\theta}
+        \exp\left(-j\frac{2\pi}{\lambda}\bm{r}^T_m\bm{\epsilon}_p\right) \\
+        \left[\frac{\partial\bm{\epsilon}_h}{\partial\theta},\frac{\partial\bm{\epsilon}_v}{\partial\theta}\right]
+        &=
+        \begin{bmatrix}
+            -\cos\theta & -\cos\phi\sin\theta \\
+            -\sin\theta & \cos\phi\cos\theta \\
+            0           & 0
+        \end{bmatrix}
+    \end{align}
+\end{subequations}
+式子中的$\left[\cdot\right]_m$表示向量的第$m$个元素。我们可以用相同的方式导出$\bm{W}_\phi$的表达式。
+
+紧接着，我们导出函数$F(\bm{\theta})$的二阶偏导数，$F_{\theta\phi}$的定义由式\eqref{polar_F_theta_phi}给出。
+\begin{equation}\label{polar_F_theta_phi}
+    \begin{aligned}
+        F_{\theta\phi} = 
+        2\frac{\operatorname{Re}\left\{\bm{y}^H\bm{W}_{\theta\phi}\bm{W}^H\bm{y}\right\}}
+        {\bm{y}^H\bm{W}\bm{W}^H\bm{y}} + 
+        2\frac{\operatorname{Re}\left\{\bm{y}^H\bm{W}_{\theta}\bm{W}^H_\phi\bm{y}\right\}}
+        {\bm{y}^H\bm{W}\bm{W}^H\bm{y}} - F_\theta F_\phi
+    \end{aligned}
+\end{equation}
+上式中，矩阵$\bm{W}$的二阶导数由下式给出。
+\begin{equation}\label{polar_W_theta_phi}
+    \begin{aligned}
+        \bm{W}_{\theta\phi} = \bm{D}_\phi^\theta - \bm{W}_\phi\bm{\mu}^\theta - \bm{W}\bm{\mu}^\theta_\phi
+    \end{aligned}
+\end{equation}
+式\eqref{polar_W_theta_phi}中，矩阵$\bm{D}^\theta_\phi$和$\mu^\theta_\phi$的定义如式所示。
+\begin{subequations}
+    \begin{align}
+        \bm{D}^\theta_\phi &= \bm{Q}^{-1}\bm{A}_{\theta\phi}
+        \left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1/2} - \bm{D}^\theta\bm{\mu}^\theta \\
+        \bm{\mu}^\theta_\phi &= 
+        -2\left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1}\bm{\mu}^\phi
+        \operatorname{Re}\left\{\bm{A}^H_\theta\bm{Q}^{-1}\bm{A}\right\} \\ &+  
+        \left(\bm{A}^H\bm{Q}^{-1}\bm{A}\right)^{-1}
+        \operatorname{Re}\left\{\bm{A}^H_{\theta\phi}\bm{Q}^{-1}\bm{A} + \bm{A}^H_\phi\bm{Q}^{-1}\bm{A}_\phi\right\}
+    \end{align}
+\end{subequations}
+接着借助式\eqref{polar_A_theta}，我们可以得到矩阵$\bm{A}$的二阶偏导数$\bm{A}_{\theta\phi}$，
+它的定义由式\eqref{polar_A_theta_phi}表出。
+\begin{equation}\label{polar_A_theta_phi}
+    \begin{aligned}
+        \bm{A} &= \operatorname{diag}\left\{\frac{\partial^2\bm{a}_s(\theta,\phi)}{\partial\theta\partial\phi}\right\}
+        \bm{G}\left[\bm{\epsilon}_h,\bm{\epsilon}_v\right] + 
+        \operatorname{diag}\left\{\bm{a}_s(\theta,\phi)\right\}\bm{G}
+        \left[
+            \frac{\partial^2\bm{\epsilon}_h}{\partial\theta\partial\phi},
+            \frac{\partial^2\bm{\epsilon}_v}{\partial\theta\partial\phi}
+        \right] \\ &+ 
+        \operatorname{diag}\left\{\frac{\partial\bm{a}_s(\theta,\phi)}{\partial\theta}\right\}\bm{G}
+        \left[
+            \frac{\partial\bm{\epsilon}_h}{\partial\phi},
+            \frac{\partial\bm{\epsilon}_v}{\partial\phi}
+        \right] + 
+        \operatorname{diag}\left\{\frac{\partial\bm{a}_s(\theta,\phi)}{\partial\phi}\right\}\bm{G}
+        \left[
+            \frac{\partial\bm{\epsilon}_h}{\partial\theta},
+            \frac{\partial\bm{\epsilon}_v}{\partial\theta}
+        \right]
+    \end{aligned}
+\end{equation}
+上式中的$\partial^2\bm{a}_s/\partial\theta\partial\phi$和
+$\partial^2\left[\bm{\epsilon}_h,\bm{\epsilon}_v\right]/\partial\theta\partial\phi$可以由式
+\eqref{polar_a_s_nd_epsilon_theta}直接计算得到。由于求导后的表达式较为复杂，因此我们在这里不将其一一给出。
+函数$F(\bm{\theta})$的其它两个二阶导数$F_{\theta\theta}$和$F_{\phi\phi}$可以以相同的方式得到。
+
+最后，我们利用函数$F(\bm{\theta})$的一二阶导数构造出式\eqref{polar_Hessian_Jacb}中的海森矩阵和雅可比矩阵，
+同时将阵列的波束指向$\bm{\theta}_0$作为初值，并结合式\eqref{polar_newton_itr}得到期望信号入射角度的估计值$\hat{\bm{\theta}}$。
+
+在得到角度估计值$\hat{\bm{\theta}}$后，我们可以进一步得到极化参数$\gamma$和$\eta$的估计值。
+首先利用$\bm{s}$的最小二乘解，即\eqref{polar_s_hat}式得到信号向量的估计值$\hat{\bm{s}}$。
+利用向量$\bm{s}$的定义式\eqref{polar_A_nd_s}我们显然能够得到式\eqref{polar_args_hat}。
+\begin{equation}\label{polar_args_hat}
+    \begin{aligned}
+        \frac{\left[\hat{\bm{s}}\right]_2}{\left[\hat{\bm{s}}\right]_1} = 
+        e^{j\hat{\eta}}\tan\hat{\gamma}
+    \end{aligned}
+\end{equation}
 
 \subsection{仿真}
 
