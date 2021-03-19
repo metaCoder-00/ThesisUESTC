@@ -13,47 +13,66 @@ Digital Phased Array}
 \begin{document}
 
 \makecover
+\originalitydeclaration
 
 \begin{chineseabstract}
 单脉冲测向技术经过近几十年的发展，已经取得了长足的进步。相比于其他测向方法，单脉冲测向方法有着计算复杂度较低、
 结构简单和便于工程实现等优点。因此，本文将对相控阵系统中的单脉冲测向方法展开深入细致的研究，主要内容具体如下：
 
-本文首先针对数字相控阵进行建模，包含常见的规则相控阵，即均匀线阵、均匀面阵和均匀圆阵，以及非规则阵列，即共形阵。
+本文首先针对数字相控阵进行建模，包含常见的规则相控阵以及共形阵列。
 我们给出了不同阵列的信号模型，并介绍与之相关的波束形成技术，以及三种传统单脉冲测向方法，
-包括半阵法、加权法和比幅测向方法。本文分析传统单脉冲测向方法的优缺点及其使用范围。
+并且分析传统单脉冲测向方法的优缺点及其适用范围。
 
 接下来，本文针对相控阵系统中的强旁瓣干扰场景展开研究，介绍了三种抑制旁瓣干扰的方法，分别从静态和差波束权优化的角度，
-和广义旁瓣对消的角度来解决强旁瓣干扰。针对第一类静态和差波束权优化方法，我们研究了线性规划方法和差分进化算法，
-分别从凸优化的角度和遗传算法的角度阐述了低旁瓣和差波束权设计的问题，与加权法类似，这类方法也是事先设计出和差波束权权向量，
-拟合出单脉冲比曲线，再将去用于测向。而广义旁瓣对消则不同，它需要依赖一个已有的静态权（比如半阵法的和差波束权），
-借助辅助阵列，使得期望信号被辅助阵列阻塞，而旁瓣干扰则可以无失真的通过，进一步在输出端叠加主阵列输出和辅助阵列输出，
-使得旁瓣干扰叠加相消。在广义旁瓣对消中，阻塞矩阵的选择也是一个重要的影响因素，因此我们还研究了一种基于SVD和准矩阵的
-阻塞矩阵设计方法，并将其用于旁瓣对消器，抑制和差波束中的旁瓣干扰。
+和广义旁瓣对消的角度来解决强旁瓣干扰。我们研究了线性规划方法和差分进化算法和广义旁瓣对消方法，
+并且研究了一种基于SVD和准矩阵的阻塞矩阵设计方法，将其用于旁瓣对消器，抑制和差波束中的旁瓣干扰。
 
-然后，我们进一步研究了自适应单脉冲测向方法，并探究了主瓣干扰的影响。与静态权方法不同，自适应带脉冲测向方法是一种在线实时算法，
-充分利用了干扰叠加噪声的统计特性。以最大似然方法为代表，利用干扰叠加噪声的概率密度函数，构建对数似然函数，再用牛顿法求解。
-MVAM自适应测向方法则是预设理想的单脉冲比，然后对接收信号的单脉冲比做近似处理，并将其在波束指向处做一阶泰勒展开，
-经过一系列处理后还原出理想单脉冲比，并将其用于测向。同样的，MVAM方法也需要一个静态和差波束权权，参与自适应测向过程。
-此外，为专门应对主瓣干扰，本文还研究了一种正交置零方法，该方法利用了均匀面阵中方位角通道和俯仰角通道相移因子的可分离特性，
-使两正交通道相互在主瓣干扰处置零，从而抑制主瓣干扰。除此之外，本文还研究了一种基于LCMV结构和MVDR波束形成的多点约束方法，
-该方法约束单脉冲比，使其与期望信号入射角度满足线性关系，在抑制主旁瓣干扰的同时，估计出期望信号的入射角度。
-由于其约束点较少，因此当测角范围较宽时，远离约束点处的测角精度就会下降，同时受限于阵列自由度，无法随意增加约束点。
+然后，我们进一步研究了主旁瓣干扰存在时的单脉冲测向方法。探讨了四种主旁瓣干扰的抑制方法，
+包括最大似然方法、MVAM方法、正交置零方法和线性约束方法。其中正交置零方法需配合旁瓣干扰抑制方法一同使用。
+除此之外，对于线性约束方法，由于其约束点较少，因此当测角范围较宽时，远离约束点处的测角精度就会下降。
 因此，本文针对该方法进行改进，利用SVD近似原约束矩阵，在提高测角精度的同时，尽可能的减少阵列自由度的消耗。
 
-最后，本文将单脉冲测向拓展到极化域，研究了极化相控阵的单脉冲测向方法。首先探究了极化相控阵的信号模型，
-利用极子的部署方式，我们将其分为两类，即正交极子的极化相控阵和任意极子的极化相控阵。针对第一类正交极子相控阵，
-我们研究了一种双通道信息融合的单脉冲测向方法，该方法利用正交极子各通道间的独立性，分别得出各通道的测向结果后，
-做加权融合，得到最终的估计结果。而针对第二类任意极子极化相控阵，本文提出了一种空域-极化域联合估计方法，
-该方法从干扰叠加噪声的统计特性入手，构造似然函数，并将极化分量与空域导向向量分离，借助对数似然函数和牛顿公式，
-先估计出信号的入射角度，再估计其极化参数。
+最后，本文将单脉冲测向拓展到极化域，研究了极化相控阵的单脉冲测向方法。首先探究了极化相控阵的信号模型。
+然后针对第一类正交极子相控阵，研究了一种双通道信息融合的单脉冲测向方法。
+而针对第二类任意极子极化相控阵，本文提出了一种空域-极化域联合估计方法，该方法从干扰叠加噪声的统计特性入手，
+构造似然函数，并将极化分量与空域导向向量分离，借助对数似然函数和牛顿公式，先估计出信号的入射角度，再估计其极化参数。
 
 \chinesekeyword{相控阵，单脉冲，测向，极化敏感阵列}
 \end{chineseabstract}
 
 \begin{englishabstract}
-This is abstract.
+Monopulse technic has developed for decades and makes a great progress.  
+It has lower algorithm complexity and convenient scheme compared with other methods.  
+Therefore, we focus on monopulse methods with phased array system.  
+This paper is organized as follows.
 
-\englishkeyword{key, words}
+In the first section, mathematical model of digital phased array system is discussed, 
+which includes common regular and conformal arrays.  We proposed different models of these arrays 
+and introduced beamforming technics.  Also, three conventional monopulse methods and their performance 
+are discussed in this section.
+
+In the second section, monopulse estimation with sidelobe jammings is investigated.  
+There three methods to suppress sidelobe jammings in the procedure.  
+Pattern synthesis is discussed including linear programming and difference evolution algorithm.  
+Then we discussed generalized sidelobe canceller (GSC) and investigated a method to design blocking matrix 
+which is based on singular value decomposition (SVD).  Using this blocking matrix and GSC, we could 
+suppress sidelobe jamming and estimate direction simultaneously.
+
+In the third section, monopulse estimation in mainlobe and sidelobe jammings is discussed.  
+Four methods are illustrated in this section including maximum likelihood, MVAM, orthogonal nulling, 
+and linear constraint.  Orthogonal nulling must coordinate with other sidelobe jamming suppresser.  
+About linear constraint method, the performance is inefficient 
+when the pattern mainlobe is broad. Thus, we corrected this method by SVD to approximate original constraint matrix.  
+As a consequence, the precision is improved using less freedom-of-degree as much as possible.
+
+In the last section, we expanded monopulse estimation into polarized field and investigated monopulse procedure 
+with polarized array.  In the first part, we discuss mathematical model of polarized array.  
+A multi-channel fusion method is proposed based on the first polarized model.  
+About the second polarized model, a space-polarization estimation method is probed by this paper.  
+We form a likelihood function from statistical perspective, and decompose polarized and spatial components.  
+Furthermore, directional and polarized arguments are estimated by Newton's method.
+
+\englishkeyword{phased array, monopulse, direction finding, polarized array}
 \end{englishabstract}
 
 \thesistableofcontents
@@ -61,15 +80,124 @@ This is abstract.
 \thesischapterexordium
 
 \section{研究工作的背景与意义}
+近年来，数字相控阵系统的应用范围越来越广泛，开始从军用领域中脱颖而出，逐渐深入到民用领域中。主要包括车载毫米波雷达，
+新一代智能天线以及通信技术。而这些应用场景都涉及到利用数字相控阵测向的问题。针对相控阵测向问题，
+最粗略的方法是利用阵列的空间功率谱，查找整个空域中功率最大的方向，将其作为期望信号入射方向的估计值\cite{Capon}。
+这种较为原始的方法实现起来简单，但容易受到各类因素的影响，且测角误差较大。第二类方法是以MUSIC方法为代表的空间谱方法\cite{Schmidt}，
+这类方法利用信号子空间与噪声子空间的正交性，构建阵列的空间谱，搜索谱峰得到期望信号方向。
+该方法从信号子空间和噪声子空间的角度入手，突破了阵列的瑞利极限，遂称之为超分辨率算法。除此以外，
+空间谱方法的代表算法还有root-MUSIC和ESPRIT方法等\cite{Krim,Roy}。虽然空间谱方法具有较高的分辨率，但这类方法通常涉及特征分解，
+计算量较大，并且大部分空间谱方法都必须预知入射信源的个数，因此必须与一些估计信源个数的方法相结合\cite{Wax}，才能进行后续的测向过程。
+第三类方法就是本文研究的单脉冲测向方法，相比空间谱方法，单脉冲方法具有结构简单，计算复杂度低和工程容易实现等优点。
+因此在如相控阵雷达系统这样对实时性要求较高的应用场景中，单脉冲测向方法更加受到青睐。
+
+在雷达系统中，电磁环境往往纷繁复杂，容易出现各种各样的干扰，这些干扰对单脉冲测向方法提出了挑战，若无法应对主旁瓣干扰，
+那么将难以给出正确的角度估计结果。因此，单脉冲测向中的干扰抑制也就变成了一个不得不研究的问题。
+
+除此之外，由于今年来硬件计算能力的大幅度提升，人们已经不满足于纯空域的阵列信号处理方法了，
+因此极化敏感阵列成为了相控阵领域新的研究热点。将阵列信号处理从空域拓展到极化域有诸多好处，首先是模型更加精确，
+传统的纯空域相控阵模型中，往往假设组成阵列的阵元天线均为全向天线，且他们的特性一致。
+尽管有些模型中把天线的单位方向图和阵元间的幅相误差也纳入了考虑，但是仍旧没有涉及到信号本身的电磁振荡特性。
+而极化阵列模型在考虑天线方向性的同时还将入射信号的电磁极化特性归入模型中，相比于纯空域的阵列更具普适性。
+其次是极化域的拓展带来了更多的信息，可以将原本在其他域——如空域或是时频域上难以区分的信号，在极化域上加以区别。
+另外，也有部分研究专注于极化域滤波，设计极化滤波器，并将其用于抑制主旁瓣干扰，由此改善单脉冲测向的适应性。
+
+因此，有必要对相控阵的单脉冲测向方法展开研究，本文首先从相控阵的模型和波束形成技术入手，介绍了传统单脉冲测向方法。
+然后研究单脉冲测向中应对旁瓣干扰的方法，接着将主瓣干扰纳入模型，讨论主旁瓣干扰的抑制方法。最后将重心方在极化相控阵上，
+讨论两种极化相控阵模型，并针对这两种模型给出了相应的单脉冲测向算法。
 
 \section{单脉冲方法的国内外研究历史与现状}
-时域积分方程方法的研究始于上世纪60 年代，
+阵列信号处理的研究始于上世纪60年代，相比于传统雷达，大规模天线阵列的引入极大的提高了数据信息量和角度分辨率。
+对于相控阵测向问题，单脉冲方法是应用范围最广的。单脉冲测向技术能在一个脉冲回波内就估计出期望信号的入射角度，
+相比于空间谱方法，它的计算复杂度更低，实时性更高。因此在众多要求实时性的系统中——如雷达系统，科研工作者门做了深入的研究。
+
+传统单脉冲测向方法主要有三种\cite{Sun}。第一种是半阵法\cite{Xun}，该方法只能用于均匀线阵和均匀面阵，
+这种方法巧妙的利用的阵列结构的对称性，以及阵列导向向量的范德蒙德特性，将阵列划分为几个子阵列，
+构造出阵列的和波束与差波束权向量，然后利用单脉冲比，即差和波束比估计出期望信号的入射角度。
+在单脉冲系统中，有一个预定的波束指向$\phi_0$，期望信号的入射方向$\phi_s$往往位于波束指向的3dB主瓣宽度内，
+因此该方法利用该特性对原表达式做近似，并在波束指向处做泰勒展开，得到单脉冲比的近似显式表达式，
+它与信号偏离波束指向的角度$\Delta=\phi_0 - \phi_s$呈线性关系。由于显式表达式的存在，
+使该方法在工程应用中毋须事先拟合单脉冲比曲线，即可直接使用理论表达式完成测向。半阵法虽然结构简单，计算量小，
+但它利用了阵列导向向量的范德蒙德特性，无法用于均匀圆阵和共形阵测向，并且，他的权向量为纯相位权，没有限制波束的旁瓣抑制比，
+因此在强旁瓣干扰存在的情况下，半阵法会失效。为提高波束的旁瓣抑制比，形成低旁瓣的和差波束，
+我们可以对阵列在波束指向处的导向向量进行加窗，得到低旁瓣的和差波束权向量。
+T. Taylor于1960年提出了针对圆形和线性天线孔径的低旁瓣和波束设计方法\cite{Taylor_55,Taylor}。
+E. T. Bayliss于1968年提出了针对圆形和线性天线孔径的低旁瓣差波束设计方法\cite{Bayliss}。
+接着P. Darwood将Bayliss的差波束设计方法从连续的天线孔径拓展到多天线相控阵上\cite{Darwood}。
+类似的，Taylor的和波束设计方法也从连续孔径拓展到了数字相控上\cite{Folgueiras}。
+这类方法是静态和差波束权的设计方法，只需事先制定技术指标，如旁瓣抑制比，需要抑制的旁瓣个数等，
+然后设计出一套满足指标的和差波束权，再将其用于和差波束形成，进一步用单脉冲比估计出期望信号的入射角度。
+这类方法的好处是权向量一经设计即可用于单脉冲系统，毋须额外计算，仅仅利用单脉冲比便可得出方向，
+并且其旁瓣抑制比也保证了能在一定强度的旁瓣干扰下正常工作。但与半阵法不同，这类方法往往没有单脉冲比的显式表达式，
+因此必须要事先进行单脉冲比曲线拟合，方可用于测向。
+而第三种传统单脉冲测向方法——比幅法则可以用于共形阵\cite{Mosca}。这类方法构造对每个角度通道构造两个波束，
+对他们的幅度分别做和与差，然后利用单脉冲比——即差和比估计信号的入射方向。这类方法抛弃了波束的相位信息，
+转而从幅度上入手，使其脱离了阵列结构的限制。但若要在强旁瓣干扰的场景下工作，该方法仍然需要与低旁瓣的波束权结合，
+或与其他自适应波束形成技术搭配使用，并且该方法无法应对主瓣干扰。
+
+为了能使单脉冲系统在主旁瓣干扰的场景下正常工作，国内外的学者开始尝试从不同角度解决该问题。
+首先是天线综合方法的研究，这类方法与Taylor和Bayliss的理念类似，尝试以某种方法和原则设计出一套低旁瓣的权向量，
+用于设计低旁瓣的和差波束权。比如设计优化目标函数与约束条件的数学优化方法\cite{Bucci,Isernia,Rocca}，
+以及利用遗传类算法进行和差波束设计\cite{Lopez,Johnson,Caorsi}。
+其次是广义旁瓣对消器\cite{Buckley,Bitzer,Jablon,Zhou}，这类方法利用一个辅助阵列（一般情况下维度小于主阵列），
+使期望信号在该辅助阵列被阻塞，而旁瓣干扰可以无失真通过，进而在输出端叠加主阵列与辅助阵列的输出，使得旁瓣干扰叠加相消，
+而由于辅助阵列中期望信号被阻塞，因此主阵列中的期望信号不会被抵消。这类方法中非常重要的一个问题就是阻塞阵列的设计，
+文献\cite{Fernández}提出了一种基于准矩阵和SVD的阻塞矩阵设计方法，文献\cite{Markovich}提出了一种稀疏阻塞矩阵，
+文献\cite{Dai}给出了一种生成阻塞矩阵的快速算法。上述这些方法均可以在一定程度上抑制旁瓣干扰，而对于主瓣干扰，
+文献\cite{Yu_00,Yu_01,Yu_16}提出了一种正交置零方法，该方法利用均匀面阵中，方位角通道与俯仰角通道相移因子的可分离性，
+使两通道互相消除主瓣干扰。当这种方法与上述的旁瓣干扰抑制方法相互搭配时，可以同时抑制主旁瓣干扰，完成自适应单脉冲测向。
+此外，还有一些研究不从传统和差波束形成的角度，转而利用接收数据的统计特性，导出自适应单脉冲估计器，
+在抑制主旁瓣干扰的同时估计出期望信号入射方向。文献\cite{Davis}利用接收数据的概率密度函数，构建对数似然函数并求解，
+导出自适应单脉冲估计式。U. Nickel对最大似然方法进行改进，在文献\cite{Nickel_93}中给出了一种针对均匀面阵的最大似然估计器，
+并在文献\cite{Nickel_96}中将该方法拓展到子阵级，之后在文献\cite{Nickel_99}中分析了校正自适应单脉冲估计器的性能，
+然后再文献\cite{Nickel_06}中给出了广义自适应单脉冲估计器的一般表达式，最后再文献\cite{Nickel_11}中，
+针对不同统计特性的信源类型，分析了广义单脉冲估计器的统计性能。其次，A.S. Paine在文献\cite{Paine}利用接收信号还原出理想单脉冲比，
+基于最小方差原则导出自适应估计器并在文献\cite{Paine_00}中将其拓展到空时自适应处理上。
+还有一些研究借助LCMV波束形成器的思想\cite{Hadad}，提出了一种线性约束方法\cite{Cheng,Zhu}，这类方法约束单脉冲比，
+以最小均方误差为原则，结合MVDR波束形成器\cite{Wolfel}，利用拉格朗日乘子法解得自适应差波束权，
+然后与MVDR和波束权一同用于单脉冲测向。
+
+近年来，随着硬件计算能力得大幅度提升，以及传统纯空域处理得局限性，越来越多的研究从传统相控阵转向了极化相控阵测向。
+文献\cite{Friedlander}给出了极化相控阵的数学模型，文献\cite{Ma,Mao_07,Mao_12}给出了一些极化域滤波器的设计方法，
+并借助比幅测向法完成了极化阵列的单脉冲测向。文献\cite{Li}将空间谱中的ESPRIT方法扩展到极化相控阵模型下，
+但专门阵对双正交极化阵列。文献\cite{Li_04,Wong}探讨了任意极子的极化阵列测向问题，将Root-MUSIC方法用于该模型下的测向。
+文献\cite{Si}利用稀疏表示方法，阵对COLD阵列进行空域-极化域联合测向。文献\cite{Gao}研究了圆锥双极化共形阵模型下的单脉冲测向。
+除此之外，文献\cite{He}还研究了部分极化电磁波模型下，交叉极子相控阵的测向问题。
+
+从上述内容中我们可以看出，经过几十年的发展，传统相控阵模型下的空域单脉冲测向已经日益趋近成熟，随着硬件计算能力的提升，
+国内外的研究热点开始转向极化相控阵模型，而目前大部分的极化测向方法都是空间谱方法，仅有的一些单脉冲方法也都针对正交极子相控阵模型。
+因此，有必要对极化相控阵模型下的单脉冲方法展开研究。
 
 \section{本文的主要贡献与创新}
-本论文以时域积分方程时间步进算法的数值实现技术、后时稳定性问题以及两层平面波加速算法为重点研究内容，主要创新点与贡献如下：
+本论文以数字相控阵系统中的单脉冲测向方法为重点研究内容，主要创新点与贡献如下：
+
+1. 本文对基于LCMV结构的线性约束方法进行了改进，提出了一种SVD-线性约束方法，提高了测向精度，
+并尽可能的较少阵列自由度的消耗。
+
+2. 本文对任意极子极化相控阵模型下的单脉冲测向问题展开研究，提出了一种空域-极化域联合测向方法，
+可以在未知极化参数的条件下，估计出信号的入射角度，并进一步给出极化参数的估计量。
 
 \section{本论文的结构安排}
 本文的章节结构安排如下：
+
+第一章为绪论，介绍研究背景与意义，并分析该课题的国内外研究现状，确定本文的研究方向。
+
+第二章为相控阵单脉冲测向的基本理论，主要介绍常用的相控阵数学模型，并介绍波束形成方法，
+在此基础上给出三种传统单脉冲测向方法，分析其优劣和适用场景。
+
+第三章是旁瓣干扰存在时的单脉冲测向方法，针对强旁瓣干扰的场景，我们介绍了三种方法，
+分别是线性规划波束设计方法，差分进化方向图综合方法和广义旁瓣对消方法。针对广义旁瓣对消器，
+我们研究了一种基于SVD的矩阵设计方法，将其用于辅助阵列，并完成旁瓣对消。
+
+第四章是主旁瓣干扰存在时的单脉冲测向方法，为应对主瓣干扰，我们研究了四类方法，分别是最大似然方法，
+MVAM方法，正交置零方法和线性约束方法。本文对线性约束方法进行了改进，提高了原方法的测角精度，
+尽可能减少阵列自由度的消耗。
+
+第五章是极化相控阵的单脉冲测向方法，本章中给出了极化相控阵的数学模型，针对正交极子极化阵列模型，
+研究了一种双通道信息融合的单脉冲测向方法。而对于任意极子极化阵列模型，本文提出了一种空域-极化域联合测向方法，
+即使在期望的极化参数未知时，该方法也能估计出期望信号的入射方向和极化参数，并且能够抑制主旁瓣干扰。
+
+第六章为全文总结与展望，总结本文的研究成果，并就本文的研究成果提出方向性建设意见。
 
 \chapter{相控阵单脉冲测向基本理论}
 本章将介绍相控阵单脉冲测向的基本原理，首先在第一节中给出几种相控阵的接收信号模型，然后在第二节中介绍波束形成技术，
@@ -1558,8 +1686,13 @@ $\bm{B}_a$并用于辅助阵列。
 广义旁瓣对消方法则是建立在已有的静态和差波束权向量之上（例如半阵法），利用辅助阵列以及干扰叠加噪声的三个相关矩阵，
 在输出端叠加相消旁瓣干扰，是一种在线的旁瓣干扰抑制方法。一般情况下，辅助阵列的维度都小于主阵列，以此减小计算量。
 
-\chapter{自适应单脉冲测向方法}
-本章中，我们将介绍四类自适应单脉冲测向方法。第一节中介绍最大似然方法，它利用干扰叠加噪声的统计特性和似然函数，
+\chapter{主旁瓣干扰存在时的单脉冲测向方法}
+除去旁瓣干扰对单脉冲测向的影响，在某些场景下，还有可能出在波束指向的主瓣区域出现一强干扰信号，
+由于主瓣区域内的增益较高，所以对单脉冲测向的影响时致命的，此时传统单脉冲测向方法难以得到正确的估计结果，
+而上一章中，我们介绍的三种方法也仅适用于抑制旁瓣干扰，无法应对主瓣干扰场景。
+因此在本章中，我们将介绍四类抑制主旁瓣干扰的单脉冲测向方法。
+
+第一节中介绍最大似然方法，它利用干扰叠加噪声的统计特性和似然函数，
 结合牛顿公式给出了一种单脉冲测向方法。第二节中介绍MVAM方法，该方法假设一个理想的单脉冲比，
 并在波束指向处做一阶泰勒展开，结合接收到的数据还原理想单脉冲比，以此给出一个单脉冲估计方法。
 第三节中介绍正交置零方法，该方法利用方位角通道和俯仰角通道的可分离性，对主瓣干扰进行抑制，若想要抑制旁瓣干扰，
@@ -2188,9 +2321,14 @@ $\cdot^*$表示共轭。当干噪比JNR较大时，可以认为$w_{a1}$近似等
 求得权值$w_{a1}$和$w_{a2}$后，得到俯仰维的自适应单脉冲比$\hat{f}_E$
 \begin{equation}\label{mrc_MLC}
     \begin{aligned}
-        \hat{f}_{E}\left(T_{x}, T_{y}\right) &=\frac{\hat{g}_{\Delta_{E}}\left(T_{x}, T_{y}\right)}{\hat{g}_{\Sigma_{E}}\left(T_{x}, T_{y}\right)} \\
-        &=\frac{g_{\Delta_{E}}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)}{g_{\Sigma}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{A}}\left(T_{x}, T_{y}\right)} \\
-        &=\frac{g_{\Delta_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)}{g_{\Sigma_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
+        \hat{f}_{E}\left(T_{x}, T_{y}\right) &=
+        \frac{\hat{g}_{\Delta_{E}}\left(T_{x}, T_{y}\right)}{\hat{g}_{\Sigma_{E}}\left(T_{x}, T_{y}\right)} \\
+        &=\frac{g_{\Delta_{E}}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)}
+        {g_{\Sigma}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{A}}\left(T_{x}, T_{y}\right)} \\
+        &=\frac{g_{\Delta_{e}}\left(T_{y}\right)
+        \left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)}
+        {g_{\Sigma_{e}}\left(T_{y}\right)
+        \left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
         &=\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
         \end{aligned}
 \end{equation}
@@ -2546,7 +2684,8 @@ MVAM方法预设理想的单脉冲比，然后在波束指向处进行一阶泰�
 并且需要一抑制旁瓣干扰的方法与其搭配使用，才能同时抑制主旁瓣干扰。
 
 \chapter{极化相控阵的单脉冲测向方法}
-本章中，我们将介绍极化敏感阵列的信号模型，并给出这种模型下的单脉冲测向方法。
+随着相控阵技术的发展，传统的纯空域处理方法越来越难以满足复杂的实际需求，因此，近年来的研究开始将测向方法从空域拓展到极化域。
+所以本章中，我们将介绍极化敏感阵列的信号模型，并给出这种模型下的单脉冲测向方法。
 与之前的阵列不同，极化敏感阵列不在假设构成阵元的天线是全向天线，
 并且将信号处理从空域进一步拓展到极化域。由于入射信号极化信息的引入，
 使得单个天线的响应由信号的入射方向和极化模式以及天线的摆放方式三个因素共同决定。
@@ -2906,9 +3045,7 @@ Kronecker积的特性，我们实际上可以将信号的极化分量归并称�
 \end{equation}
 在未知期望信号极化参数的条件下，该方法使用两通道分别求解，并以功率作为权值进行信息融合，保证最终给出一个可接受的结果。
 
-\subsection{性能分析}
-
-\subsection{仿真}
+\subsection{仿真结果}
 
 \section{极子摆放方式不同时的极化相控阵单脉冲测向}
 当组成阵列的极子朝向各不相同时，导向向量中的空域时延$\bm{a}_s(\theta,\phi)$无法和极化导致的幅相变化分离，
@@ -3210,12 +3347,11 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 \begin{figure}[h]
     \subfloat[]{
         \label{Polar_RMSE_jammer_free_a}
-        \includegraphics[scale=0.4]{pic/azimuth_RMSE_jammer_free.eps}
+        \includegraphics[scale=0.285]{pic/azimuth_RMSE_jammer_free.eps}
     }
-    \floatcontinue
     \subfloat[]{
         \label{Polar_RMSE_jammer_free_b}
-        \includegraphics[scale=0.4]{pic/elevation_RMSE_jammer_free.eps}
+        \includegraphics[scale=0.285]{pic/elevation_RMSE_jammer_free.eps}
     }
     \caption{无干扰条件下方向估计的RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{Polar_RMSE_jammer_free}
@@ -3235,12 +3371,11 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 \begin{figure}[h]
     \subfloat[]{
         \label{Polar_RMSE_SLJ_a}
-        \includegraphics[scale=0.4]{pic/azimuth_RMSE_SLJ.eps}
+        \includegraphics[scale=0.285]{pic/azimuth_RMSE_SLJ.eps}
     }
-    \floatcontinue
     \subfloat[]{
         \label{Polar_RMSE_SLJ_b}
-        \includegraphics[scale=0.4]{pic/elevation_RMSE_SLJ.eps}
+        \includegraphics[scale=0.285]{pic/elevation_RMSE_SLJ.eps}
     }
     \caption{存在旁瓣干扰时的方向估计RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{Polar_RMSE_SLJ}
@@ -3258,12 +3393,11 @@ $0$变化到$\pi/2$，其余条件不变。极化参数的估计性能如图\ref
 \begin{figure}[h]
     \subfloat[]{
         \label{Polar_args_RMSE_a}
-        \includegraphics[scale=0.4]{pic/gamma_hat.eps}
+        \includegraphics[scale=0.285]{pic/gamma_hat.eps}
     }
-    \floatcontinue
     \subfloat[]{
         \label{Polar_args_RMSE_b}
-        \includegraphics[scale=0.4]{pic/eta_hat.eps}
+        \includegraphics[scale=0.285]{pic/eta_hat.eps}
     }
     \caption{无干扰时的极化参数估计RMSE。(a)极化辅助角RMSE；(b)极化相位差RMSE}
     \label{Polar_args_RMSE}
