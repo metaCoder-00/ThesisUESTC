@@ -518,7 +518,7 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
         \bm{C}^H\bm{w} = \bm{f}
     \end{aligned}
 \end{equation}
-上式中，矩阵$\bm{C}\mathbb{C}^{M\times(L+P)}$称为约束矩阵，向量$\bm{f}\in\mathbb{C}^{(L+P)\times1}$
+上式中，矩阵$\bm{C}\in\mathbb{C}^{M\times(L+P)}$称为约束矩阵，向量$\bm{f}\in\mathbb{C}^{(L+P)\times1}$
 为对应的约束向量。对于上述约束条件，我们可以将其表述为式\eqref{costraint_mat_vec}。
 \begin{subequations}\label{costraint_mat_vec}
     \begin{align}
@@ -678,13 +678,13 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
 考虑一个$8$阵元的均匀线阵，阵元间距为半波长，若我们设阵列波束指向$\phi_0=0^\circ$，
 和波束与差波束如图\ref{semi_sigma_delta}所示，半阵法的单脉冲比曲线如图\ref{semi_MRC_figure}所示。
 \begin{figure}[h]
-\includegraphics[scale=0.4]{pic/semi_sigma_delta.eps}
+\includegraphics[scale=0.5]{pic/semi_sigma_delta.eps}
 \caption{半阵法的和波束$\Sigma$与差波束$\Delta$}
 \label{semi_sigma_delta}
 \end{figure}
 
 \begin{figure}[h]
-\includegraphics[scale=0.4]{pic/semi_MRC.eps}
+\includegraphics[scale=0.5]{pic/semi_MRC.eps}
 \caption{半阵法的单脉冲比曲线}
 \label{semi_MRC_figure}
 \end{figure}
@@ -710,7 +710,7 @@ MRC的线性度较好，而在远离波束指向的地方，MRC的线性度较�
 首先考虑一个长度为$2a$质地均匀的线形天线孔径，取其中点为参考点$O$，并假设信号以角度$\phi$入射，
 如图\ref{linear_aperture}所示。
 \begin{figure}[h]
-    \includegraphics[scale=0.8]{pic/linear aperture.pdf}
+    \includegraphics[scale=0.8]{pic/linear_aperture.pdf}
     \caption{线性孔径接收信号模型}
     \label{linear_aperture}
 \end{figure}
@@ -744,7 +744,7 @@ $2a$为线形孔径的长度，$\phi$为期望信号入射角度，如图\ref{li
 \end{equation}
 对于线形孔径，我们可以取$\mu_l=l$。
 式\eqref{cos_seq}中，$\bar{n}$是我们期望抑制的邻近（主瓣）旁瓣个数。
-我们定义对数旁瓣抑制比为$\text{SLL}$
+我们定义对数旁瓣抑制比$\text{SLL}$为
 \begin{equation}\label{SLL}
     \begin{aligned}
         \text{SLL} = 20\lg\eta = 10\lg\left(\nu_s^2/\nu_m^2\right)
@@ -847,6 +847,7 @@ $2a$为线形孔径的长度，$\phi$为期望信号入射角度，如图\ref{li
 式\eqref{Z_n}中，$\xi_n$和$A$是与旁瓣抑制比SLL有关的常数，
 可由表\ref{Z_n_coeff_tab}给出的SLL四阶多项式系数算出。
 \begin{table}[h]
+    \caption{$A$和$Z_n$的多项式系数}
     \begin{tabular}{|c|c|c|c|c|c|}
     \hline
     \multirow{2}{*}{常量}  & \multicolumn{5}{|c|}{多项式系数}  \\
@@ -864,7 +865,6 @@ $2a$为线形孔径的长度，$\phi$为期望信号入射角度，如图\ref{li
     $\xi_4$ & 4.00518423 & -0.00501795 & 0.00021735 & 0.00000088 & 0.00000000 \\
     \hline
     \end{tabular}
-    \caption{$A$和$Z_n$的多项式系数}
     \label{Z_n_coeff_tab}
 \end{table}
 
@@ -903,7 +903,7 @@ $2a$为线形孔径的长度，$\phi$为期望信号入射角度，如图\ref{li
 我们取阵列波束指向$\phi_0=0^\circ$，旁瓣抑制比SLL为$-35$dB，抑制邻近旁瓣的个数$\bar{n}=4$。
 Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 \begin{figure}[h]
-    \includegraphics[scale=0.4]{pic/Taylor_Bayliss.eps}
+    \includegraphics[scale=0.5]{pic/Taylor_Bayliss.eps}
     \caption{Taylor权形成的和波束$\Sigma$与Bayliss权形成的差波束$\Delta$}
     \label{Taylor_Bayliss}
 \end{figure}
@@ -914,7 +914,7 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 另外，加权法的单脉冲比MRC没有显式表达式，我们需要预先对MRC进行线性拟合才能够在单脉冲测向系统中使用它。
 图\ref{Taylor_Bayliss_MRC}给出了加权法的单脉冲比曲线。
 \begin{figure}[h]
-    \includegraphics[scale=0.4]{pic/Taylor_Bayliss_MRC.eps}
+    \includegraphics[scale=0.5]{pic/Taylor_Bayliss_MRC.eps}
     \caption{加权法的单脉冲比曲线}
     \label{Taylor_Bayliss_MRC}
 \end{figure}
@@ -971,7 +971,7 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 我们取$\phi_l=-5^\circ$且$\phi_r=5^\circ$。
 此时和差波束如图\ref{ACM_sigma_delta}所示。
 \begin{figure}[h]
-    \includegraphics[scale=0.4]{pic/ACM_sigma_delta.eps}
+    \includegraphics[scale=0.5]{pic/ACM_sigma_delta.eps}
     \caption{比幅法的和波束$\Sigma$与差波束$\Delta$}
     \label{ACM_sigma_delta}
 \end{figure}
@@ -981,7 +981,7 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 不存在一个显式表达式，因此只能通过曲线拟合拟合出其斜率，然后在单脉冲测向系统中用于测向。
 其单脉冲比曲线如图\ref{ACM_MRC_figure}所示。
 \begin{figure}[h]
-    \includegraphics[scale=0.4]{pic/ACM_MRC.eps}
+    \includegraphics[scale=0.5]{pic/ACM_MRC.eps}
     \caption{比幅法的单脉冲比曲线}
     \label{ACM_MRC_figure}
 \end{figure}
@@ -993,12 +993,11 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 进而简要的阐述了波束形成技术和传统单脉冲测向方法。
 
 首先是相控阵的数学模型，依据阵元排布的方式，
-我们将其划分为两大类，第一类是规则的阵列主要包含均匀线阵，均匀面阵和均匀圆阵。
-我们通过几何光学计算出信号到达各个阵元的波程差，进一步给出其相位差，在远场窄带信号的假设下，
-给出了这三种阵列的导向向量。第二类阵列是共形阵，主要特征为其“一般”性，即阵元排布不遵循某一特定规律。
-在这种情况下，我们利用信号的方向余弦向量以及每个阵元的笛卡尔坐标计算出信号到达每个阵元的相位差，
-进而给出一般导向向量表达式。值得注意的是，第一类规则阵列实际上是共形阵列的一种特殊形式，
-其导向向量依然可以根据共形阵导向向量导出。
+我们将其划分为两大类，第一类是规则阵列主要包含均匀线阵，均匀面阵和均匀圆阵。
+第二类是共形阵，即阵元排布不遵循某一特定规律。
+我们利用信号的方向余弦向量以及每个阵元的坐标计算出信号到达每个阵元的相位差，
+进而给出阵列的导向向量表达式。值得注意的是，第一类规则阵列实际上是共形阵列的一种特殊形式，
+其导向向量可以根据共形阵导向向量导出。
 
 接着我们介绍了波束形成技术，阐述了波束形成的目的和一般手段。
 然后介绍了两种波束形成方法，分别是MVDR方法和LCMV方法。
@@ -1031,7 +1030,7 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 该方法利用辅助阵列阻塞期望信号，进而和主阵列的波束输出叠加，以此抵消旁瓣干扰。
 
 \section{线性规划方法设计波束}
-该方法由Rocca在2015年提出\cite{Rocca}，主要针对均匀面阵或均匀线阵，利用阵列结构的对称性，构建线性规划问题，
+该方法由Rocca在2015年在文献\cite{Rocca}中提出，主要针对均匀面阵或均匀线阵，利用阵列结构的对称性，构建线性规划问题，
 设计低旁瓣的和差波束权向量。
 
 \subsection{基本原理}
@@ -1162,6 +1161,7 @@ $$
 因此没有固定的显式表达式，所以我们仍然需要曲线拟合来进行后续的单脉冲测向过程。
 
 \subsection{仿真结果}
+
 
 \section{差分进化算法设计低旁瓣差波束}
 本节中，我们将介绍一种利用差分进化算法设计差波束的方法。该方法由Caorsi提出\cite{Caorsi}。
@@ -1417,7 +1417,7 @@ $\lfloor\cdot\rfloor$表示向下取整，$CR$为突变概率。
 在随后的小节中，我们将介绍一种更为灵活的阻塞矩阵设计方式。
 
 \subsection{一种基于准矩阵和SVD的阻塞矩阵设计方法}
-本节我们将介绍一种灵活的阻塞矩阵设计方法，该方法Fernández等人15年提出\cite{Fernández}。
+本节我们将介绍一种灵活的阻塞矩阵设计方法，该方法由Fernández等人15年在文献\cite{Fernández}中提出。
 该方法巧妙的利用了准矩阵和SVD设计阻塞矩阵，在本节中，我们将以均匀线阵为例，给出该方法的一般过程。
 
 首先考虑一个$M$阵元的均匀线阵，阵元间距为半波长，入射信号为远场窄带信号，波长为$\lambda$。
@@ -3479,11 +3479,11 @@ Kronecker积的形式，这样就可以将不同指向的几组极子分开，�
 \thesisacknowledgement
 在攻读硕士学位期间，首先衷心感谢我的导师XXX教授
 
-\thesisappendix
+% \thesisappendix
 
-\chapter{中心极限定理的证明}
+% \chapter{中心极限定理的证明}
 
-\section{高斯分布和伯努利实验}
+% \section{高斯分布和伯努利实验}
 
 
 % Uncomment to list all the entries of the database.
@@ -3499,7 +3499,7 @@ Kronecker积的形式，这样就可以将不同指向的几组极子分开，�
 % \bibliographystyle{thesis-uestc}
 % \bibliography{reference}
 
-% \thesisaccomplish{publications}
+\thesisaccomplish{publications}
 
 % \thesistranslationoriginal
 % \section{The OFDM Model of Multiple Carrier Waves}
