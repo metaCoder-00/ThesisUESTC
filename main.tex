@@ -683,15 +683,15 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
 \label{semi_sigma_delta}
 \end{figure}
 
+从图\ref{semi_sigma_delta}中我们可以看出，和波束的主瓣对准了$\phi_0=0^\circ$，
+$3$dB衰减边界大致位于$\pm6^\circ$处。差波束在波束指向$\phi_0$处形成了一个较深的零陷，
+注意图\ref{semi_sigma_delta}截断了衰减$-50$dB以下的部分。
+
 \begin{figure}[h]
 \includegraphics[scale=0.5]{pic/semi_MRC.eps}
 \caption{半阵法的单脉冲比曲线}
 \label{semi_MRC_figure}
 \end{figure}
-
-从图\ref{semi_sigma_delta}中我们可以看出，和波束的主瓣对准了$\phi_0=0^\circ$，
-$3$dB衰减边界大致位于$\pm6^\circ$处。差波束在波束指向$\phi_0$处形成了一个较深的零陷，
-注意图\ref{semi_sigma_delta}截断了衰减$-50$dB以下的部分。
 
 对于单脉冲曲线图\ref{semi_MRC_figure}，我们可以得知当角度$\phi$与波束指向角$\phi_0$较为接近时，
 MRC的线性度较好，而在远离波束指向的地方，MRC的线性度较差。
@@ -1161,10 +1161,56 @@ $$
 因此没有固定的显式表达式，所以我们仍然需要曲线拟合来进行后续的单脉冲测向过程。
 
 \subsection{仿真结果}
+我们考虑一个$M=100$阵元的均匀线阵，阵元间距为半波长，设波束指向$\phi_0$为$0^\circ$，
+利用线性规划方法优化出低旁瓣的和差波束权。首先取式\eqref{lp_joint_opt_const}中的$\eta$为40，
+然后取旁瓣区域的约束点数$S=10M$，最后对于式\eqref{lp_joint_opt_const}中的旁瓣约束函数$\operatorname{UB}^\Sigma(u)$
+和$\operatorname{UB}^\Delta(u)$（注意，均匀线阵只有一个测角通道），它们的定义由式\eqref{lp_ub_fun}给出。
+\begin{subequations}\label{lp_ub_fun}
+    \begin{align}
+        \operatorname{UB}^\Sigma(u) &= 
+        \begin{cases}
+            10000, ~ -0.1\leqslant u \leqslant 0.1 \\
+            1, ~ \text{otherwise}
+        \end{cases} \\
+        \operatorname{UB}^\Delta(u) &= 
+        \begin{cases}
+            10000, ~ -0.17\leqslant u \leqslant 0.17 \\
+            1, ~ \text{otherwise}
+        \end{cases}
+    \end{align}
+\end{subequations}
+实际上在式\eqref{lp_ub_fun}中，我们取旁瓣抑制比SLL为-40dB。
 
+线性规划完成后的和差波束如图\ref{LP_sigma_delta}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/LP_sigma_delta.eps}
+    \caption{线性规划方法的和波束$\Sigma$与差波束$\Delta$}
+    \label{LP_sigma_delta}
+\end{figure}
+从图\eqref{LP_sigma_delta}中可以看出，旁瓣抑制比SLL达到了设计要求的-40dB，可以在一定程度上有效抑制旁瓣干扰。
+
+线性规划方法的单脉冲比曲线如图\ref{LP_MRC}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/LP_MRC.eps}
+    \caption{线性规划方法的单脉冲比曲线}
+    \label{LP_MRC}
+\end{figure}
+与加权法类似，测向前同样需要拟合单脉冲比曲线，然后用于测向。
+
+接下来我们对和差波束权的抗旁瓣干扰特性进行验证，由于100阵元均匀的线阵的波束较窄，因此我们设期望信号的入射方向$\phi_s$为$2\circ$，
+此时它偏离波束指向的角度为$\Delta\phi=\phi_s-\phi_0=2^\circ$，期望信号的信噪比SNR为10dB，然后设定一个旁瓣干扰，它的入射方向为
+$\phi_j=15^\circ$，干噪比JNR从-20dB变化到60dB，假定快拍数为200，进行1000次独立统计实验，
+此时期望信号方向估计量$\hat{\phi}$的均方根误差（RMSE）随旁瓣干扰干噪比JNR的变化曲线如图\ref{LP_RMSE_JNR}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/LP_RMSE_JNR.eps}
+    \caption{线性规划方法的均方根误差随旁瓣干扰干噪比变化的曲线}
+    \label{LP_RMSE_JNR}
+\end{figure}
+
+从图\ref{LP_RMSE_JNR}中可以看出，当旁瓣干扰干噪比低于40dB时，该方法能够有效的抑制旁瓣干扰。
 
 \section{差分进化算法设计低旁瓣差波束}
-本节中，我们将介绍一种利用差分进化算法设计差波束的方法。该方法由Caorsi提出\cite{Caorsi}。
+本节中，我们将介绍一种利用差分进化算法设计差波束的方法。该方法由Caorsi在文献\cite{Caorsi}中提出。
 差分进化算法是遗传算法的一种改进形式，同样通过模拟种群的进化来求得符合要求的解。需要注意的是，
 与遗传算法一样，差分进化算法也不保证得到全局最优解。本节中，我们以均匀线阵为例，给出该方法的一般过程，
 并展示其数值仿真的结果。
@@ -1214,31 +1260,27 @@ $$
 在差分进化算法初始化的步骤中，我们要设置种群规模为$N_P$，它是随机生成的，随着种群的迭代而不断更新。
 然后将$\bm{u}_k(i)$定义为第$k$次迭代中的第$i$个个体，其中$i=1,2,\cdots,N_P$。
 在第$k$次迭代中，我们随机从种群中选出三个个体$\bm{u}_k(i_1)$，$\bm{u}_k(i_2)$和$\bm{u}_k(i_3)$，
-用于产生第$k+1$次迭代的第$i$个个体，它们遵循如下原则
-\begin{algorithm}[H]
-    \KwData{$N_P$个个体$\bm{u}_0(1)\sim\bm{u}_0(N_P)$}
-    \KwResult{完成$K$轮迭代后的最优个体$\bm{u}_K(i_{opt})$}
-    初始化$\bm{u}_0(1)\sim\bm{u}_0(N_P)$为随机值\;
-    \While{任意$f(\bm{u}_k(i))$不小于阈值$f_{th}$且$k<K$}{
-        \begin{equation*}
-            \begin{aligned}
-                \bm{m}_k &= \left(\bm{u}_k(i_1)-\bm{u}_k(i_2)\right)F + \bm{u}_k(i_3) \\
-                \tilde{\bm{u}}_{k+1}(i) &= \bm{m}_k \times \bm{u}_k(i)
-            \end{aligned}
-        \end{equation*}
-        \eIf{$f(\tilde{\bm{u}}_{k+1}(i)) < f(\bm{u}_k(i))$}{
-            $$
-                \tilde{\bm{u}}_{k+1}(i) = \tilde{\bm{u}}_{k+1}(i)
-            $$
-        }{
-            $$
-                \tilde{\bm{u}}_{k+1}(i) = \bm{u}_{k}(i)
-            $$
-        }
-    }
+用于产生第$k+1$次迭代的第$i$个个体，它们遵循表\ref{de_algorithm_tab}中的原则
+\begin{table}[h]
     \caption{差分进化算法}
+    \begin{tabular}{l}
+    \toprule
+    算法：差分进化\\
+    \midrule
+    1. 初始化$\bm{u}_0(1)\sim\bm{u}_0(N_P)$为随机值；\\
+    2. 判断$f(\bm{u}_k(i))\geqslant f_{th}$且$k<K$是否成立，若是则转到3，否则转8； \\
+    3. 交叉操作$\bm{m}_k = \left(\bm{u}_k(i_1)-\bm{u}_k(i_2)\right)F + \bm{u}_k(i_3)$和
+        $\tilde{\bm{u}}_{k+1}(i) = \bm{m}_k \times \bm{u}_k(i)$； \\
+    4. 判断$f(\tilde{\bm{u}}_{k+1}(i)) < f(\bm{u}_k(i))$是否成立，若成立转5，否则转6； \\
+    5. $\bm{u}_{k+1}(i) = \tilde{\bm{u}}_{k+1}(i)$； \\
+    6. $\bm{u}_{k+1}(i) = \bm{u}_{k}(i)$； \\
+    7. 转到2； \\
+    8. 结束； \\
+    \bottomrule
+    \end{tabular}
     \label{de_algorithm_tab}
-\end{algorithm}
+\end{table}
+
 表\ref{de_algorithm_tab}中，$\times$表示交叉操作，$F$是一个权值，而向量$\bm{m}_k$称为突变个体。$f(\cdot)$是代价函数，
 用于评估个体的适应性。每轮迭代中，我们先用随机选出的三个个体产生突变个体$\bm{\mu}_k$，然后用突变个体与$\bm{u}_k(i)$交叉，
 产生新个体$\tilde{\bm{u}}_{k+1}(i)$，若新个体的适应度高于原个体，则用它替代原个体，否则原个体不变，对于种群$N_P$中的所有个体，
@@ -1281,9 +1323,49 @@ $$
 $\lfloor\cdot\rfloor$表示向下取整，$CR$为突变概率。
 
 差分进化算法的关键在于突变概率$CR$和权值$F$的选择，选择不慎会造成差分进化算法的早熟，或是收敛速度较慢。
-而它们的选择和具体的问题有关。在下一个子节中，我们选取一个均匀线阵的例子，展示他的性能。
+而它们的选择和具体的问题有关。另外，代价函数$f(\cot)$的选取也不唯一。
+在下一个子节中，我们选取一个均匀线阵的例子，展示他的性能。
 
 \subsection{仿真结果}
+首先，我们采用文献\cite{Lopez_01}中的代价函数来评估个体适应性，即式\eqref{de_cost_fun}。
+\begin{equation}\label{de_cost_fun}
+    \begin{aligned}
+        f(\bm{u}_k(i)) = \left[\text{SLL}_k(i)-\text{SLL}_d\right]^2 
+        H\left(\text{SLL}_k(i)-\text{SLL}_d\right)
+    \end{aligned}
+\end{equation}
+式\eqref{de_cost_fun}中，$\text{SLL}_d$表示技术指标要求的旁瓣抑制比，而$\text{SLL}_k(i)$表示$\bm{u}_k(i)$
+的实际旁瓣抑制比，函数$H(\cdot)$表示Heaviside函数即阶跃函数。
+
+由于差分进化算法需要依托和波束权向量，因此我们采取Taylor权作为低旁瓣和波束权向量，设置旁瓣抑制比$\text{SLL}_d$
+为-25dB，旁瓣抑制个数$\bar{n}=6$。此外，我们将阵元划分为3个组，即$P=3$，取权值$F=0.5$，概率$CR=0.7$。
+此时，和差波束如图\ref{DE_sigma_delta}所示，其中和波束为Taylor加权法的波束。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/DE_sigma_delta.eps}
+    \caption{差分进化算法的和波束$\Sigma$与差波束$\Delta$}
+    \label{DE_sigma_delta}
+\end{figure}
+
+从图\ref{DE_sigma_delta}中可以看出，差波束的旁瓣抑制比接近-25dB，基本达到了设计要求。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/DE_MRC.eps}
+    \caption{差分进化算法的单脉冲比曲线}
+    \label{DE_MRC}
+\end{figure}
+
+单脉冲曲线如图\ref{DE_MRC}所示。同样，我们需要先拟合单脉冲比，让后将其用于测向。
+
+接下来我们对该方法的抗旁瓣干扰特性进行验证，由于50阵元均匀的线阵的波束较窄，因此我们设期望信号的入射方向$\phi_s$为$2\circ$，
+此时它偏离波束指向的角度为$\Delta\phi=\phi_s-\phi_0=2^\circ$，期望信号的信噪比SNR为10dB，然后设定一个旁瓣干扰，它的入射方向为
+$\phi_j=15^\circ$，干噪比JNR从-20dB变化到60dB，假定快拍数为200，进行1000次独立统计实验，
+此时期望信号方向估计量$\hat{\phi}$的均方根误差（RMSE）随旁瓣干扰干噪比JNR的变化曲线如图\ref{DR_RMSE_JNR}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/DR_RMSE_JNR.eps}
+    \caption{差分进化方法的均方根误差随旁瓣干扰干噪比变化的曲线图}
+    \label{DR_RMSE_JNR}
+\end{figure}
+
+从图\ref{DR_RMSE_JNR}中可以看出，当旁瓣干扰的干噪比JNR小于25dB时，和差波束能够有效抑制旁瓣干扰。
 
 \section{广义旁瓣对消方法}
 与前两节中的波束设计方法不同，本节中将要介绍的广义旁瓣对消方法不是通过设计低旁瓣的和差波束权来抑制旁瓣干扰，
@@ -1651,7 +1733,7 @@ $s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
 设定阻带为$-5^\circ$到$5^\circ$，对于式\eqref{P_G_hat_approx}中的近似，我们分别取$L=5$和$L=3$。
 此时阻塞矩阵形成的波束$\Sigma_b$与波束指向导向向量形成的波束$\Sigma$如图\ref{GSC_Block_dif_L}所示。
 \begin{figure}[h]
-    \includegraphics[scale=0.4]{pic/GSC_Block.eps}
+    \includegraphics[scale=0.5]{pic/GSC_Block.eps}
     \caption{阻塞矩阵形成的波束$\Sigma_b$}
     \label{GSC_Block_dif_L}
 \end{figure}
@@ -1659,7 +1741,28 @@ $s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
 从图\ref{GSC_Block_dif_L}的结果中我们可以看出，该方法在$-5^\circ\le\phi\le5^\circ$处形成了阻带，
 且阻塞效果，即主瓣抑制比随着近似点数$L$的增加而增大，也就是说$L$越大，设计的阻塞矩阵效果越好。
 
-\subsection{均匀线阵旁瓣对消的仿真结果}
+\subsection{仿真结果}
+考虑一个主阵列阵元数$M_m$为$16$，辅助阵列阵元数$M_a$为$8$的阵列，主阵列和辅助阵列的阵元间距均为半波长，
+阵列波束指向$\phi_0=0^\circ$。存在两旁瓣干扰，它们的入射方向分别为$-35^\circ$和$30^\circ$，干噪比分别为
+35dB和30dB，快拍数为200。我们选取半阵法的和差波束权作为主阵列静态权向量，此时由广义旁瓣对消器得到的和差波束如
+图\ref{GSC_sigma_delta}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/GSC_sigma_delta.eps}
+    \caption{广义旁瓣对消产生的和波束$\Sigma$与差波束$\Delta$}
+    \label{GSC_sigma_delta}
+\end{figure}
+
+从图\ref{GSC_sigma_delta}中可以看出，和差波束都在旁瓣干扰入射方向，即$-35^\circ$和$30^\circ$处产生了零陷，
+且抑制比与两旁瓣干扰的干噪比相当。与上两节中介绍的静态权方法不同，广义旁瓣对消器的零陷会随着旁瓣干扰的改变而改变，
+并非静态权那样的固定旁瓣抑制比。类似的，我们也可以得到它的单脉冲比曲线，如图\ref{GSC_MRC}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/GSC_MRC.eps}
+    \caption{广义旁瓣对消产生的单脉冲比曲线}
+    \label{GSC_MRC}
+\end{figure}
+
+由于广义旁瓣对消是一种自适应算法，干扰抑制的零陷会随着干噪比的变化而变化，因此在这里我们在这里不做统计性能实验，
+图\ref{GSC_MRC}的单脉冲比曲线从一定程度上说明了该方法的有效性。
 
 \section{本章小结}
 本章中，我们讨论了三种应对旁瓣干扰的方法。前两种方法与传统单脉冲测向中的加权法类似，需要事先依照给定的技术指标，
@@ -1682,8 +1785,8 @@ $s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
 $\bm{B}_a$并用于辅助阵列。
 
 线性规划和差分进化方法都是静态权向量方法，它们的优点在于静态权向量一经设计即可用于单脉冲测向系统，没有额外的在线计算过程。
-但设计过程中的超参数过多，且影响较大，参数的选择不同，以及具体阵列的不同，都会影响静态权向量的设计结果。
-广义旁瓣对消方法则是建立在已有的静态和差波束权向量之上（例如半阵法），利用辅助阵列以及干扰叠加噪声的三个相关矩阵，
+但设计过程中的超参数过多，参数的选择以及具体阵列的不同，都会影响静态权向量的设计结果。
+广义旁瓣对消方法则是建立在已有的静态和差波束权向量之上，利用辅助阵列以及干扰叠加噪声的三个相关矩阵，
 在输出端叠加相消旁瓣干扰，是一种在线的旁瓣干扰抑制方法。一般情况下，辅助阵列的维度都小于主阵列，以此减小计算量。
 
 \chapter{主旁瓣干扰存在时的单脉冲测向方法}
@@ -1707,6 +1810,7 @@ $\bm{B}_a$并用于辅助阵列。
 U. Nickel 在 1993 年将该方法应用到了单脉冲系统中\cite{Nickel_93}。
 该方法的优势在于，不受限于具体的阵列形式，只要能够知道干扰叠加噪声的统计特性，就可以利用该方法进行求解。
 
+\subsection{基本原理}
 我们以一个$M$行$N$列的均匀面阵为例，分析该方法的导出过程。首先对于均匀面阵，我们可以利用式\eqref{data_model}和\eqref{sv_URA}
 得到其接收信号模型
 \begin{equation}\label{ML_data_model}
@@ -1953,8 +2057,30 @@ $\bm{a}(\bm{\theta}_s)\approx\bm{a}(\bm{\theta}_{max})$。并且结合\eqref{ml_
 \end{equation}
 最后利用反三角函数即可估计出期望信号的入射方向$\hat{\bm{\theta}}$。
 
+\subsection{仿真结果}
+考虑一个8阵元的均匀线阵，阵元间距为半波长，阵列的波束指向$\phi_0$为$20^\circ$。
+假设有两个干扰信号——旁瓣干扰和主瓣干扰，入射方向分别为$35^\circ$和$17^\circ$，
+干噪比分别为30dB和35dB。期望信号的信噪比为10dB，快拍数为400，期望信号的入射角度从$15^\circ$变化到$25^\circ$，
+进行1000次统计独立实验。在此条件下，最大似然方法的均方根误差与加权法（Taylor权与Bayliss权）的对比如图\ref{ML_RMSE}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/ML_RMSE.eps}
+    \caption{最大似然方法与加权法的均方根误差}
+    \label{ML_RMSE}
+\end{figure}
+
+从图\ref{ML_RMSE}中可以看出，由于加权法无法应对主瓣干扰，因此在除去干扰点$17^\circ$附近以外的所有测角区域，
+加权法都失效了，而当期望信号入射角$\phi_s=17^\circ$时，和主瓣干扰重叠，主瓣干扰等效的增强了期望信号的信噪比。
+而对于最大似然方法，它利用协方差矩阵在该点处抑制干扰，当期望信号入射角度与主瓣干扰相同时，被该方法一同抑制，
+此时最大似然方法失效，而在其他测角区域，则可以不受主瓣干扰的影响进行测向。另外，从图\ref{ML_RMSE}中也可以得知，
+该方法能够抑制旁瓣干扰。综上所述，最大似然方法可以同时抑制主旁瓣干扰并进行测向，但当期望信号与主瓣干扰重叠时，
+会一并遭到抑制，从而使得此时的测角精度下降。
+
 \section{MVAM方法}
-本节中，我们同样以$M$行$N$列的均匀面阵为例，解析MVAM方法的一般过程。
+本节中，我们介绍的MVAM方法是由A.S. Paine在文献\cite{Paine}中提出的一类自适应方法。
+它利用干扰叠加噪声的协方差矩阵和阵列接收到的数据还原出理想单脉冲比，进而完成自适应测向。
+
+\subsection{基本原理}
+我们同样以$M$行$N$列的均匀面阵为例，解析MVAM方法的一般过程。
 首先信号模型同式\eqref{ML_data_model}一样。我们设单脉冲比为$R$，而无噪声的理想单脉冲比为$R_0$。
 它们由式\eqref{MVAM_MRC}给出。
 \begin{equation}\label{MVAM_MRC}
@@ -2205,135 +2331,147 @@ $\bm{a}(\bm{\theta}_s)\approx\bm{a}(\bm{\theta}_{max})$。并且结合\eqref{ml_
 \end{equation}
 式\eqref{MVAM_beta_solve}和\eqref{MVAM_estimator}中，矩阵$\bm{B}$和$\bm{R}$分别是矩阵$\bm{B}_1$和$\bm{R}_1$的前两行。
 
-\section{正交置零主瓣干扰抑制方法}
-在上文中，我们介绍了旁瓣对消器用于抑制旁瓣干扰，但在某些单脉冲测向的场景中，
-会在和波束的3dB主瓣内存在强干扰，但旁瓣对消器无法处理主瓣干扰。
-因此在本节中我们给出一种利用正交通道进行主瓣干扰置零的方法，该方法主要针对均匀面阵，
-可以有效的抑制主瓣干扰，由K. Yu等人提出\cite{Yu_01}。
+\subsection{仿真结果}
+在本节中，仿真条件的设置与4.1.2节相同。同样，我们将MVAM方法与加权法进行对比，它们的均方根误差如图\ref{MVAM_RMSE}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/MVAM_RMSE.eps}
+    \caption{MVAM方法与加权法的均方根误差}
+    \label{MVAM_RMSE}
+\end{figure}
 
-我们首先定义和波束$g_\Sigma(\cdot)$与差波束$g_\Delta(\cdot)$
-\begin{subequations}\label{URA_sigma_delta_g}
-    \begin{align}
-        g_\Sigma(T_s) = \bm{w}^H_\Sigma\bm{a}(T_s)
-        \\
-        g_\Delta(T_s) = \bm{w}^H_\Delta\bm{a}(T_s)
-    \end{align}
-\end{subequations}
-上式中，$T_s$为方向余弦。
-从式\eqref{subsv_URA}和\eqref{sv_URA}可以得知，面阵的导向向量的元素可以分解为两个正交方向上相位差的积。
-因此对于$xOy$平面上的均匀线阵，我们可以得到
-\begin{subequations}\label{URA_beams}
-    \begin{align}
-        g_{\Sigma}\left(T_{x}, T_{y}\right)=g_{\Sigma_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right) \\
-        g_{\Delta_{A}}\left(T_{x}, T_{y}\right)=g_{\Delta_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right) \\
-        g_{\Delta_{E}}\left(T_{x}, T_{y}\right)=g_{\Sigma_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right) \\
-        g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)=g_{\Delta_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right)
-    \end{align}
-\end{subequations}
-式\eqref{URA_beams}中，方向余弦$T_x=\sin\phi\cos\theta$，$T_y=\sin\phi\sin\theta$。
-$g_{\Sigma_{a}}$表示方位维的和波束，$g_{\Sigma_{e}}$表示俯仰维的和波束，
-$g_{\Delta_{a}}$表示方位维的差波束，$g_{\Delta_{a}}$表示俯仰维的差波束。
+与最大似然方法类似，从图\ref{MVAM_RMSE}中可知，MVAM方法仍旧能够有效抑制主旁瓣干扰，但当期望信号入射方向接近主瓣干扰时，
+也会受到抑制作用，进而影响测角。
 
-然后先考虑无干扰和噪声的情况。此时俯仰通道的单脉冲比$\eta_E$为
-\begin{equation}\label{MRC_E}
-    \begin{aligned}
-        \eta_{E}=\frac{P_{t} g_{\Delta_{E}}}{P_{t} g_{\Sigma}}
-                =\frac{P_{t} g_{\Sigma_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right)}
-                      {P_{t} g_{\Sigma_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right)}
-                =\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
-    \end{aligned}
-\end{equation}
-从式\eqref{MRC_E}中我们可以看出，俯仰方向上单通道的单脉冲比与双通道（即方位-俯仰维）单脉冲比相同。
-但是当我们假设有一个主瓣干扰源，其功率为$P_i$时，俯仰方向上的单脉冲比为
-\begin{equation}\label{MRC_E_jam}
-    \begin{aligned}
-        \eta_{E}&=\frac{P_{t} g_{\Delta_{E 1}}+P_{i} g_{\Delta_{E 2}}}{P_{t} g_{\Sigma 1}+P_{i} g_{\Sigma 2}} \\
-                &=\frac{P_{t} g_{\Sigma_{a1}}\left(T_{x}\right) g_{\Delta_{e 1}}\left(T_{y}\right)+P_{i} 
-                        g_{\Sigma_{a 2}}\left(T_{x}\right) g_{\Delta_{e 2}}\left(T_{y}\right)}
-                       {P_{t} g_{\Sigma_{a 1}}\left(T_{x}\right) g_{\Sigma_{e 1}}\left(T_{y}\right)+P_{i} 
-                        g_{\Sigma_{a 2}}\left(T_{x}\right) g_{\Delta_{e 2}}\left(T_{y}\right)} 
-                \neq \frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
-    \end{aligned}
-\end{equation}
-此时双通道单脉冲比和单通道单脉冲比不相等。从式\eqref{MRC_E_jam}中可以看出，若想去除干扰带来的影响，
-就必须使得$g_{\Sigma a2}(T_x)$尽可能的小。所以我们令干扰角度方向上的和波束$g_{\Sigma a}(T_x)$
-减去$w_a$倍的差波束，得到式\eqref{MRC_cancel_jam}。
-\begin{equation}\label{MRC_cancel_jam}
-    \begin{aligned}
-        \eta_E &= \frac{g_{\Delta_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-
-                        w_{a 2} g_{\Delta_{a}}\left(T_{x}\right)\right)}
-                       {g_{\Sigma_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-
-                        w_{a 1} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
-               &= \frac{g_{\Delta_{e}}\left(T_{y}\right) g_{\Sigma_{a}}\left(T_{x}\right)-
-                        w_{a 2} g_{\Delta_{e}}\left(T_{y}\right) g_{\Delta_{a}}\left(T_{x}\right)}
-                       {g_{\Sigma_{e}}\left(T_{y}\right) g_{\Sigma_{a}}\left(T_{x}\right)-
-                        w_{a 1} g_{\Sigma_{e}}\left(T_{y}\right) g_{\Delta_{a}}\left(T_{x}\right)} \\
-               &= \frac{g_{\Delta_{E}}-w_{a 2} g_{\Delta_{\Delta}}}{g_{\Sigma}-w_{a 1} g_{\Delta_{A}}}
-    \end{aligned}
-\end{equation}
-注意，在式子\eqref{MRC_cancel_jam}中，我们暂时省略掉了期望信号功率$P_t$与噪声功率$P_i$。
+% \section{正交置零主瓣干扰抑制方法}
+% 在上文中，我们介绍了旁瓣对消器用于抑制旁瓣干扰，但在某些单脉冲测向的场景中，
+% 会在和波束的3dB主瓣内存在强干扰，但旁瓣对消器无法处理主瓣干扰。
+% 因此在本节中我们给出一种利用正交通道进行主瓣干扰置零的方法，该方法主要针对均匀面阵，
+% 可以有效的抑制主瓣干扰，由K. Yu等人在文献\cite{Yu_01}中提出。
 
-现在将波束形成器的输出记为$r_{(\cdot)}$，俯仰维主瓣干扰置零后的自适应和差波束输出记为$\hat{r}_{\Sigma E}$和
-$\hat{r}_{\Delta E}$，他们由式\eqref{adp_out}给出。
-\begin{subequations}\label{adp_out}
-    \begin{align}
-        \hat{r}_{\Sigma_{E}}&=r_{\Sigma}-w_{a 1} r_{\Delta_{A}} \\
-        \hat{r}_{\Delta_{E}}&=r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}
-    \end{align}
-\end{subequations}
-利用式\eqref{adp_out}和最小均方误差原则，我们将主瓣干扰置零问题转化为优化问题
-\begin{subequations}
-    \begin{align}
-        &\min_{w_{a1}} ~ \left(r_{\Sigma}-w_{a 1} r_{\Delta_{A}}\right)^H
-                         \left(r_{\Sigma}-w_{a 1} r_{\Delta_{A}}\right)
-        \\
-        &\min_{w_{a2}} ~ \left(r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}\right)^H
-                         \left(r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}\right)
-    \end{align}
-\end{subequations}
-然后我们构造代价函数并求导令其为零，得到$w_{a1}$和$w_{a2}$的最优解
-\begin{subequations}\label{w_solves}
-    \begin{align}
-        w_{a 1}&=\frac{R_{\Sigma \Delta_{A}}}{R_{\Delta_{A} \Delta_{A}}} \\
-        w_{a 2}&=\frac{R_{\Delta_{E} \Delta_{\Delta}}}{R_{\Delta_{\Delta} \Delta_{\Delta}}}
-    \end{align}
-\end{subequations}
-式\eqref{w_solves}中，$R_{(\cdot)}$表示各波束通道输出结果的互相关，其定义由式\eqref{corr_r}给出。
-\begin{subequations}\label{corr_r}
-    \begin{align}
-        R_{\Sigma \Delta_{A}} &=E\left[r_{\Sigma} r_{\Delta_{A}}^{*}\right]
-                               =P_{J} g_{\Sigma}\left(T_{x}^{J}, T_{y}^{J}\right) 
-                                g_{\Delta_{A}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right) \\
-        R_{\Delta_{A} \Delta_{A}} &=E\left[r_{\Delta_{A}} r_{\Delta_{A}}^{*}\right]
-                                   =P_{J} g_{\Delta_{A}}\left(T_{x}^{J}, T_{y}^{J}\right) 
-                                    g_{\Delta_{A}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right)+P_N \\
-        R_{\Delta_{E} \Delta_{\Delta}} &=E\left[r_{\Delta_{E}} r_{\Delta_{\Delta}}^{*}\right]
-                                        =P_{J} g_{\Delta_{E}}\left(T_{x}^{J}, T_{y}^{J}\right) 
-                                         g_{\Delta_{\Delta}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right) \\
-        R_{\Delta_{\Delta} \Delta_{\Delta}} &=E\left[r_{\Delta_{\Delta}} r_{\Delta_{\Delta}}^{*}\right]
-                                             =P_{J} g_{\Delta_{\Delta}}\left(T_{x}^{J}, T_{y}^{J}\right) 
-                                             g_{\Delta_{\Delta}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right)+P_N
-    \end{align}
-\end{subequations}
-上式中，$P_J$和$P_N$分别表示主瓣干扰功率和噪声功率，$T_x^J$和$T_y^J$分别表示主瓣干扰的$x$轴方向余弦和$y$轴方向余弦，
-$\cdot^*$表示共轭。当干噪比JNR较大时，可以认为$w_{a1}$近似等于$w_{a2}$成立。但在实际情况中，两者可能并不相等。
+% \subsection{基本原理}
+% 我们首先定义和波束$g_\Sigma(\cdot)$与差波束$g_\Delta(\cdot)$
+% \begin{subequations}\label{URA_sigma_delta_g}
+%     \begin{align}
+%         g_\Sigma(T_s) = \bm{w}^H_\Sigma\bm{a}(T_s)
+%         \\
+%         g_\Delta(T_s) = \bm{w}^H_\Delta\bm{a}(T_s)
+%     \end{align}
+% \end{subequations}
+% 上式中，$T_s$为方向余弦。
+% 从式\eqref{subsv_URA}和\eqref{sv_URA}可以得知，面阵的导向向量的元素可以分解为两个正交方向上相位差的积。
+% 因此对于$xOy$平面上的均匀线阵，我们可以得到
+% \begin{subequations}\label{URA_beams}
+%     \begin{align}
+%         g_{\Sigma}\left(T_{x}, T_{y}\right)=g_{\Sigma_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right) \\
+%         g_{\Delta_{A}}\left(T_{x}, T_{y}\right)=g_{\Delta_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right) \\
+%         g_{\Delta_{E}}\left(T_{x}, T_{y}\right)=g_{\Sigma_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right) \\
+%         g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)=g_{\Delta_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right)
+%     \end{align}
+% \end{subequations}
+% 式\eqref{URA_beams}中，方向余弦$T_x=\sin\phi\cos\theta$，$T_y=\sin\phi\sin\theta$。
+% $g_{\Sigma_{a}}$表示方位维的和波束，$g_{\Sigma_{e}}$表示俯仰维的和波束，
+% $g_{\Delta_{a}}$表示方位维的差波束，$g_{\Delta_{a}}$表示俯仰维的差波束。
 
-求得权值$w_{a1}$和$w_{a2}$后，得到俯仰维的自适应单脉冲比$\hat{f}_E$
-\begin{equation}\label{mrc_MLC}
-    \begin{aligned}
-        \hat{f}_{E}\left(T_{x}, T_{y}\right) &=
-        \frac{\hat{g}_{\Delta_{E}}\left(T_{x}, T_{y}\right)}{\hat{g}_{\Sigma_{E}}\left(T_{x}, T_{y}\right)} \\
-        &=\frac{g_{\Delta_{E}}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)}
-        {g_{\Sigma}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{A}}\left(T_{x}, T_{y}\right)} \\
-        &=\frac{g_{\Delta_{e}}\left(T_{y}\right)
-        \left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)}
-        {g_{\Sigma_{e}}\left(T_{y}\right)
-        \left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
-        &=\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
-        \end{aligned}
-\end{equation}
-关于式\eqref{mrc_MLC}中的权值$w_a$，一种可行的方式是取$w_a=(w_{a1}+w_{a2})/2$。
-同理可得方位角通道的自适应单脉冲比$\hat{f}_A$，在此不做赘述。
+% 然后先考虑无干扰和噪声的情况。此时俯仰通道的单脉冲比$\eta_E$为
+% \begin{equation}\label{MRC_E}
+%     \begin{aligned}
+%         \eta_{E}=\frac{P_{t} g_{\Delta_{E}}}{P_{t} g_{\Sigma}}
+%                 =\frac{P_{t} g_{\Sigma_{a}}\left(T_{x}\right) g_{\Delta_{e}}\left(T_{y}\right)}
+%                       {P_{t} g_{\Sigma_{a}}\left(T_{x}\right) g_{\Sigma_{e}}\left(T_{y}\right)}
+%                 =\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
+%     \end{aligned}
+% \end{equation}
+% 从式\eqref{MRC_E}中我们可以看出，俯仰方向上单通道的单脉冲比与双通道（即方位-俯仰维）单脉冲比相同。
+% 但是当我们假设有一个主瓣干扰源，其功率为$P_i$时，俯仰方向上的单脉冲比为
+% \begin{equation}\label{MRC_E_jam}
+%     \begin{aligned}
+%         \eta_{E}&=\frac{P_{t} g_{\Delta_{E 1}}+P_{i} g_{\Delta_{E 2}}}{P_{t} g_{\Sigma 1}+P_{i} g_{\Sigma 2}} \\
+%                 &=\frac{P_{t} g_{\Sigma_{a1}}\left(T_{x}\right) g_{\Delta_{e 1}}\left(T_{y}\right)+P_{i} 
+%                         g_{\Sigma_{a 2}}\left(T_{x}\right) g_{\Delta_{e 2}}\left(T_{y}\right)}
+%                        {P_{t} g_{\Sigma_{a 1}}\left(T_{x}\right) g_{\Sigma_{e 1}}\left(T_{y}\right)+P_{i} 
+%                         g_{\Sigma_{a 2}}\left(T_{x}\right) g_{\Delta_{e 2}}\left(T_{y}\right)} 
+%                 \neq \frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
+%     \end{aligned}
+% \end{equation}
+% 此时双通道单脉冲比和单通道单脉冲比不相等。从式\eqref{MRC_E_jam}中可以看出，若想去除干扰带来的影响，
+% 就必须使得$g_{\Sigma a2}(T_x)$尽可能的小。所以我们令干扰角度方向上的和波束$g_{\Sigma a}(T_x)$
+% 减去$w_a$倍的差波束，得到式\eqref{MRC_cancel_jam}。
+% \begin{equation}\label{MRC_cancel_jam}
+%     \begin{aligned}
+%         \eta_E &= \frac{g_{\Delta_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-
+%                         w_{a 2} g_{\Delta_{a}}\left(T_{x}\right)\right)}
+%                        {g_{\Sigma_{e}}\left(T_{y}\right)\left(g_{\Sigma_{a}}\left(T_{x}\right)-
+%                         w_{a 1} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
+%                &= \frac{g_{\Delta_{e}}\left(T_{y}\right) g_{\Sigma_{a}}\left(T_{x}\right)-
+%                         w_{a 2} g_{\Delta_{e}}\left(T_{y}\right) g_{\Delta_{a}}\left(T_{x}\right)}
+%                        {g_{\Sigma_{e}}\left(T_{y}\right) g_{\Sigma_{a}}\left(T_{x}\right)-
+%                         w_{a 1} g_{\Sigma_{e}}\left(T_{y}\right) g_{\Delta_{a}}\left(T_{x}\right)} \\
+%                &= \frac{g_{\Delta_{E}}-w_{a 2} g_{\Delta_{\Delta}}}{g_{\Sigma}-w_{a 1} g_{\Delta_{A}}}
+%     \end{aligned}
+% \end{equation}
+% 注意，在式子\eqref{MRC_cancel_jam}中，我们暂时省略掉了期望信号功率$P_t$与噪声功率$P_i$。
+
+% 现在将波束形成器的输出记为$r_{(\cdot)}$，俯仰维主瓣干扰置零后的自适应和差波束输出记为$\hat{r}_{\Sigma E}$和
+% $\hat{r}_{\Delta E}$，他们由式\eqref{adp_out}给出。
+% \begin{subequations}\label{adp_out}
+%     \begin{align}
+%         \hat{r}_{\Sigma_{E}}&=r_{\Sigma}-w_{a 1} r_{\Delta_{A}} \\
+%         \hat{r}_{\Delta_{E}}&=r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}
+%     \end{align}
+% \end{subequations}
+% 利用式\eqref{adp_out}和最小均方误差原则，我们将主瓣干扰置零问题转化为优化问题
+% \begin{subequations}
+%     \begin{align}
+%         &\min_{w_{a1}} ~ \left(r_{\Sigma}-w_{a 1} r_{\Delta_{A}}\right)^H
+%                          \left(r_{\Sigma}-w_{a 1} r_{\Delta_{A}}\right)
+%         \\
+%         &\min_{w_{a2}} ~ \left(r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}\right)^H
+%                          \left(r_{\Delta_{E}}-w_{a 2} r_{\Delta_{\Delta}}\right)
+%     \end{align}
+% \end{subequations}
+% 然后我们构造代价函数并求导令其为零，得到$w_{a1}$和$w_{a2}$的最优解
+% \begin{subequations}\label{w_solves}
+%     \begin{align}
+%         w_{a 1}&=\frac{R_{\Sigma \Delta_{A}}}{R_{\Delta_{A} \Delta_{A}}} \\
+%         w_{a 2}&=\frac{R_{\Delta_{E} \Delta_{\Delta}}}{R_{\Delta_{\Delta} \Delta_{\Delta}}}
+%     \end{align}
+% \end{subequations}
+% 式\eqref{w_solves}中，$R_{(\cdot)}$表示各波束通道输出结果的互相关，其定义由式\eqref{corr_r}给出。
+% \begin{subequations}\label{corr_r}
+%     \begin{align}
+%         R_{\Sigma \Delta_{A}} &=E\left[r_{\Sigma} r_{\Delta_{A}}^{*}\right]
+%                                =P_{J} g_{\Sigma}\left(T_{x}^{J}, T_{y}^{J}\right) 
+%                                 g_{\Delta_{A}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right) \\
+%         R_{\Delta_{A} \Delta_{A}} &=E\left[r_{\Delta_{A}} r_{\Delta_{A}}^{*}\right]
+%                                    =P_{J} g_{\Delta_{A}}\left(T_{x}^{J}, T_{y}^{J}\right) 
+%                                     g_{\Delta_{A}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right)+P_N \\
+%         R_{\Delta_{E} \Delta_{\Delta}} &=E\left[r_{\Delta_{E}} r_{\Delta_{\Delta}}^{*}\right]
+%                                         =P_{J} g_{\Delta_{E}}\left(T_{x}^{J}, T_{y}^{J}\right) 
+%                                          g_{\Delta_{\Delta}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right) \\
+%         R_{\Delta_{\Delta} \Delta_{\Delta}} &=E\left[r_{\Delta_{\Delta}} r_{\Delta_{\Delta}}^{*}\right]
+%                                              =P_{J} g_{\Delta_{\Delta}}\left(T_{x}^{J}, T_{y}^{J}\right) 
+%                                              g_{\Delta_{\Delta}}^{*}\left(T_{x}^{J}, T_{y}^{J}\right)+P_N
+%     \end{align}
+% \end{subequations}
+% 上式中，$P_J$和$P_N$分别表示主瓣干扰功率和噪声功率，$T_x^J$和$T_y^J$分别表示主瓣干扰的$x$轴方向余弦和$y$轴方向余弦，
+% $\cdot^*$表示共轭。当干噪比JNR较大时，可以认为$w_{a1}$近似等于$w_{a2}$成立。但在实际情况中，两者可能并不相等。
+
+% 求得权值$w_{a1}$和$w_{a2}$后，得到俯仰维的自适应单脉冲比$\hat{f}_E$
+% \begin{equation}\label{mrc_MLC}
+%     \begin{aligned}
+%         \hat{f}_{E}\left(T_{x}, T_{y}\right) &=
+%         \frac{\hat{g}_{\Delta_{E}}\left(T_{x}, T_{y}\right)}{\hat{g}_{\Sigma_{E}}\left(T_{x}, T_{y}\right)} \\
+%         &=\frac{g_{\Delta_{E}}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{\Delta}}\left(T_{x}, T_{y}\right)}
+%         {g_{\Sigma}\left(T_{x}, T_{y}\right)-w_{a} g_{\Delta_{A}}\left(T_{x}, T_{y}\right)} \\
+%         &=\frac{g_{\Delta_{e}}\left(T_{y}\right)
+%         \left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)}
+%         {g_{\Sigma_{e}}\left(T_{y}\right)
+%         \left(g_{\Sigma_{a}}\left(T_{x}\right)-w_{a} g_{\Delta_{a}}\left(T_{x}\right)\right)} \\
+%         &=\frac{g_{\Delta_{e}}\left(T_{y}\right)}{g_{\Sigma_{e}}\left(T_{y}\right)}
+%         \end{aligned}
+% \end{equation}
+% 关于式\eqref{mrc_MLC}中的权值$w_a$，一种可行的方式是取$w_a=(w_{a1}+w_{a2})/2$。
+% 同理可得方位角通道的自适应单脉冲比$\hat{f}_A$，在此不做赘述。
 
 \section{线性约束方法}
 本节中，我们将介绍一种LCMV结构的自适应单脉冲测向方法，并给出该方法的一种改进型。
@@ -2341,7 +2479,7 @@ $\cdot^*$表示共轭。当干噪比JNR较大时，可以认为$w_{a1}$近似等
 并以最小均方误差作为目标函数，借助LCMV结构求解差波束权向量。
 改进型方法对约束矩阵做SVD，然后选取部分正奇异值和左右奇异向量以近似原约束矩阵。
 
-\subsection{联合线性约束方法}
+\subsection{基本原理}
 我们将以均匀面阵为例，给出该方法的导出过程。
 考虑一个$M$行$N$列的均匀面阵，相邻两行阵元间距均为$d_m$，相邻两列阵元间距为$d_n$，入射信号波长为$\lambda$，
 波束指向为$\bm{\theta}_0=\left[\theta_0,\phi_0\right]^T$。
@@ -2523,7 +2661,33 @@ $\bm{\rho}_a$的子向量定义如下
 在本方法中，由于单脉冲比是预先设定得线性函数，斜率分别为$k_1$，$k_2$和$k_3$，因此不需要进行曲线拟合便可直接用于测向。
 一般情况下，我们可以选取主瓣的3dB宽度边界值作为$\Delta\theta$和$\Delta\phi$求解出自适应差波束权向量。
 
-\subsection{SVD-线性约束方法}
+\subsection{仿真结果}
+本节中的仿真条件与4.1.2节相同，由MVDR和波束权和线性约束差波束权得到的和差自适应波束如图\ref{JLC_sigma_delta}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/JLC_sigma_delta.eps}
+    \caption{MVDR自适应和波束$\Sigma$与线性约束自适应差波束$\Delta$}
+    \label{JLC_sigma_delta}
+\end{figure}
+
+从图\eqref{JLC_sigma_delta}中我们可以看出，和差波束都在主瓣干扰$17^\circ$和旁瓣干扰$35^\circ$处形成了零陷，以此抑制主旁瓣干扰。
+此时的自适应单脉冲比曲线如图\ref{JLC_MRC}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/JLC_MRC.eps}
+    \caption{线性约束方法的自适应单脉冲比}
+    \label{JLC_MRC}
+\end{figure}
+
+同样，在图\ref{JLC_MRC}中，主瓣干扰$17^\circ$处出现了零陷，用于抑制主瓣干扰。当期望信号的信噪比为10dB，快拍数为400，
+期望信号的入射角度从$15^\circ$变化到$25^\circ$时，进行1000次统计独立实验，测角均方根误差如图\eqref{JLC_RMSE}所示。
+\begin{figure}[h]
+    \includegraphics[scale=0.5]{pic/JLC_RMSE.eps}
+    \caption{线性约束方法的均方根误差}
+    \label{JLC_RMSE}
+\end{figure}
+
+图\eqref{JLC_RMSE}
+
+\section{SVD-线性约束方法}
 联合线性约束方法可以有效的抑制主旁瓣干扰，并且毋须预先拟合单脉冲曲线就可以直接进行测向。
 但该方法的局限性在于，它只选取了波束指向$\bm{\theta}_0$以及测角区域的边界值（一般为3dB边界）作为约束条件。
 当阵列的和波束较宽时，由约束得到的单脉冲比曲线非线性程度可能较高，并且在远离约束点处，
@@ -2531,6 +2695,7 @@ $\bm{\rho}_a$的子向量定义如下
 以提高其泛用性，并使得其在远离约束点时仍然能保持较高的测角精度。为简化推导过程，本节中将以均匀线阵为例，
 改进该方法。
 
+\subsection{基本原理}
 首先考虑一个$M$阵元的均匀线阵，其阵元间距为半波长，入射信号的波长为$\lambda$，阵列的波束指向为$\phi_0$。
 要解决单脉冲比曲线线性度下降引起的测角精度下降问题，最直接的方式就是选取更多的约束点，
 使得单脉冲比$f$在每个点上都满足线性关系。但从第二章中的LCMV波束形成器的原理中可知，约束点数会收到阵列自由度的限制，
