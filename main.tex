@@ -677,7 +677,7 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
 
 考虑一个$8$阵元的均匀线阵，阵元间距为半波长，若我们设阵列波束指向$\phi_0=0^\circ$，
 和波束与差波束如图\ref{semi_sigma_delta}所示，半阵法的单脉冲比曲线如图\ref{semi_MRC_figure}所示。
-\begin{figure}[h]
+\begin{figure}[H]
 \includegraphics[scale=0.5]{pic/semi_sigma_delta.eps}
 \caption{半阵法的和波束$\Sigma$与差波束$\Delta$}
 \label{semi_sigma_delta}
@@ -687,7 +687,7 @@ LCMV方法的基本原理相同，我们仍旧需要使空域滤波器的平均�
 $3$dB衰减边界大致位于$\pm6^\circ$处。差波束在波束指向$\phi_0$处形成了一个较深的零陷，
 注意图\ref{semi_sigma_delta}截断了衰减$-50$dB以下的部分。
 
-\begin{figure}[h]
+\begin{figure}[H]
 \includegraphics[scale=0.5]{pic/semi_MRC.eps}
 \caption{半阵法的单脉冲比曲线}
 \label{semi_MRC_figure}
@@ -902,7 +902,7 @@ $2a$为线形孔径的长度，$\phi$为期望信号入射角度，如图\ref{li
 考虑一个$8$阵元的均匀线阵，阵元间距为半波长。
 我们取阵列波束指向$\phi_0=0^\circ$，旁瓣抑制比SLL为$-35$dB，抑制邻近旁瓣的个数$\bar{n}=4$。
 Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/Taylor_Bayliss.eps}
     \caption{Taylor权形成的和波束$\Sigma$与Bayliss权形成的差波束$\Delta$}
     \label{Taylor_Bayliss}
@@ -913,7 +913,7 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 但加窗的步骤使得主瓣展宽，和波束的3dB截止角度此时位于$\pm8^\circ$附近。
 另外，加权法的单脉冲比MRC没有显式表达式，我们需要预先对MRC进行线性拟合才能够在单脉冲测向系统中使用它。
 图\ref{Taylor_Bayliss_MRC}给出了加权法的单脉冲比曲线。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/Taylor_Bayliss_MRC.eps}
     \caption{加权法的单脉冲比曲线}
     \label{Taylor_Bayliss_MRC}
@@ -970,7 +970,7 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 考虑一个$8$阵元的均匀线阵，阵元间距为半波长，波束指向$\phi_0=0^\circ$，
 我们取$\phi_l=-5^\circ$且$\phi_r=5^\circ$。
 此时和差波束如图\ref{ACM_sigma_delta}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/ACM_sigma_delta.eps}
     \caption{比幅法的和波束$\Sigma$与差波束$\Delta$}
     \label{ACM_sigma_delta}
@@ -980,13 +980,14 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 且旁瓣电平较高，难以抑制旁瓣干扰，仍旧无法用于存在强旁瓣干扰的场景。另外，比幅法的单脉冲比MRC也
 不存在一个显式表达式，因此只能通过曲线拟合拟合出其斜率，然后在单脉冲测向系统中用于测向。
 其单脉冲比曲线如图\ref{ACM_MRC_figure}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/ACM_MRC.eps}
     \caption{比幅法的单脉冲比曲线}
     \label{ACM_MRC_figure}
 \end{figure}
 
-与之前的两种方法类似，MRC在远离波束指向角$\phi_0$时线性度会下降，进而影响测角精度。
+与之前的两种方法类似，MRC在远离波束指向角$\phi_0$时线性度会下降，进而影响测角精度，
+这是因为偏离波束指向$\phi_0$越远的位置，其线性度越差，拟合的偏差就越大。
 
 \section{本章小结}
 本章中，我们假设组成相控阵的所有阵元天线都是完全一致的全向天线，并给出了相控阵接收信号的数学模型，
@@ -1006,21 +1007,20 @@ Taylor权与Bayliss权形成的和差波束如图\ref{Taylor_Bayliss}所示。
 实际上，MVDR方式是LCMV方法的一种特殊形式，即规定在指向角$\phi_0$处信号无失真通过。
 在后续的章节中，我们还将利用LCMV结构进行单脉冲测向。
 
-最后我们给出了三种常用的传统单脉冲测向方法，分别是半阵法、加权法和比幅法，
-三种方法的优缺点各异。半阵法主要更近均匀线阵或均匀面阵的对称性，构造出和差波束权向量。
-而在单脉冲测向问题中，期望信号的真实方向$\phi_s$往往接近于波束指向$\phi_0$，
-因此半阵法利用该特性导出一个关于偏离角$\Delta\phi$的显式线性函数，进一步用于测向过程。
+最后我们给出了三种常用的传统单脉冲测向方法，分别是半阵法、加权法和比幅法。
+半阵法利用均匀线阵或均匀面阵的对称性，构造出和差波束权向量。
+进一步利用泰勒展开导出一个关于偏离角$\Delta\phi$的显式线性函数，进一步用于测向过程。
 该方法简单易于实现，但依赖于阵列的几何结构，不能用于均匀圆阵和共形阵，
 并且其和差波束的旁瓣电平都较高，无法应对有强旁瓣干扰存在时的场景。
 因此，T. Taylor和E. T. Bayliss分别提出了一种和差波束加权方法，
-进而设计出一种低旁瓣的和差波束权向量。该方法可以用于均匀线阵、均匀面阵和均匀圆阵，
-其优点在于底旁瓣的波束能够在一定程度上抑制旁瓣干扰。但加窗的处理过程使得和波束主瓣有一定程度的展宽，
-可能会造成测向精度下降，并且这种方法的单脉冲比没有显式表达式，因此只能先进行曲线拟合，
-再将拟合好的数据用于后续的单脉冲测向过程。另外，该方法虽然可以拓展至均匀圆阵，
-但仍旧无法将其用于共形阵。第三种方法是比幅测向法，该方法通过选取关于波束指向$\phi_0$对称的
-两个角度的导向向量来构造差波束，并且单脉冲比直接用差波束与和波束的赋值进行比较，以此测量
-偏离角$\Delta\phi$。该方法不受限于阵列结构，可以用于共形阵单脉冲测向。
-但该方法与半阵法类似，和波束旁瓣电平仍然较高，无法应对强旁瓣干扰存在的场景。
+进而设计出一种低旁瓣的和差波束权向量。该方法可以用于规则阵列。
+其优点在于低旁瓣的波束能够在一定程度上抑制旁瓣干扰，但加窗的处理过程使得和波束主瓣有一定程度的展宽，
+可能会造成测向精度下降，并且该方法的单脉冲比没有显式表达式，因此必须进行曲线拟合，
+再将拟合好的数据用于后续的单脉冲测向过程。此外，加权法仍旧无法用于共形阵。
+第三种方法是比幅测向法，该方法通过选取关于波束指向$\phi_0$对称的
+两个角度的导向向量来构造差波束，并且单脉冲比直接用差波束与和波束的幅值进行比较，估计偏离角$\Delta\phi$。
+该方法不受限于阵列结构，可以用于共形阵单脉冲测向。
+但该方法的和波束旁瓣电平仍然较高，无法应对强旁瓣干扰。
 
 \chapter{旁瓣干扰存在时的单脉冲测向方法}
 在2.3节中，我们介绍了三种传统单脉冲测向方法，除去加权法以外，其余两种方法都无法应对旁瓣干扰。
@@ -1182,7 +1182,7 @@ $$
 实际上在式\eqref{lp_ub_fun}中，我们取旁瓣抑制比SLL为-40dB。
 
 线性规划完成后的和差波束如图\ref{LP_sigma_delta}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/LP_sigma_delta.eps}
     \caption{线性规划方法的和波束$\Sigma$与差波束$\Delta$}
     \label{LP_sigma_delta}
@@ -1190,7 +1190,7 @@ $$
 从图\eqref{LP_sigma_delta}中可以看出，旁瓣抑制比SLL达到了设计要求的-40dB，可以在一定程度上有效抑制旁瓣干扰。
 
 线性规划方法的单脉冲比曲线如图\ref{LP_MRC}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/LP_MRC.eps}
     \caption{线性规划方法的单脉冲比曲线}
     \label{LP_MRC}
@@ -1201,7 +1201,7 @@ $$
 此时它偏离波束指向的角度为$\Delta\phi=\phi_s-\phi_0=2^\circ$，期望信号的信噪比SNR为10dB，然后设定一个旁瓣干扰，它的入射方向为
 $\phi_j=15^\circ$，干噪比JNR从-20dB变化到60dB，假定快拍数为200，进行1000次独立统计实验，
 此时期望信号方向估计量$\hat{\phi}$的均方根误差（RMSE）随旁瓣干扰干噪比JNR的变化曲线如图\ref{LP_RMSE_JNR}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/LP_RMSE_JNR.eps}
     \caption{线性规划方法的均方根误差随旁瓣干扰干噪比变化的曲线}
     \label{LP_RMSE_JNR}
@@ -1340,14 +1340,14 @@ $\lfloor\cdot\rfloor$表示向下取整，$CR$为突变概率。
 由于差分进化算法需要依托和波束权向量，因此我们采取Taylor权作为低旁瓣和波束权向量，设置旁瓣抑制比$\text{SLL}_d$
 为-25dB，旁瓣抑制个数$\bar{n}=6$。此外，我们将阵元划分为3个组，即$P=3$，取权值$F=0.5$，概率$CR=0.7$。
 此时，和差波束如图\ref{DE_sigma_delta}所示，其中和波束为Taylor加权法的波束。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/DE_sigma_delta.eps}
     \caption{差分进化算法的和波束$\Sigma$与差波束$\Delta$}
     \label{DE_sigma_delta}
 \end{figure}
 
 从图\ref{DE_sigma_delta}中可以看出，差波束的旁瓣抑制比接近-25dB，基本达到了设计要求。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/DE_MRC.eps}
     \caption{差分进化算法的单脉冲比曲线}
     \label{DE_MRC}
@@ -1359,7 +1359,7 @@ $\lfloor\cdot\rfloor$表示向下取整，$CR$为突变概率。
 此时它偏离波束指向的角度为$\Delta\phi=\phi_s-\phi_0=2^\circ$，期望信号的信噪比SNR为10dB，然后设定一个旁瓣干扰，它的入射方向为
 $\phi_j=15^\circ$，干噪比JNR从-20dB变化到60dB，假定快拍数为200，进行1000次独立统计实验，
 此时期望信号方向估计量$\hat{\phi}$的均方根误差（RMSE）随旁瓣干扰干噪比JNR的变化曲线如图\ref{DR_RMSE_JNR}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/DR_RMSE_JNR.eps}
     \caption{差分进化方法的均方根误差随旁瓣干扰干噪比变化的曲线图}
     \label{DR_RMSE_JNR}
@@ -1732,7 +1732,7 @@ $s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
 考虑一个$16$阵元的均匀线阵，阵元间距为半波长，波束指向为$\phi_0=0^\circ$，
 设定阻带为$-5^\circ$到$5^\circ$，对于式\eqref{P_G_hat_approx}中的近似，我们分别取$L=5$和$L=3$。
 此时阻塞矩阵形成的波束$\Sigma_b$与波束指向导向向量形成的波束$\Sigma$如图\ref{GSC_Block_dif_L}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/GSC_Block.eps}
     \caption{阻塞矩阵形成的波束$\Sigma_b$}
     \label{GSC_Block_dif_L}
@@ -1746,7 +1746,7 @@ $s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
 阵列波束指向$\phi_0=0^\circ$。存在两旁瓣干扰，它们的入射方向分别为$-35^\circ$和$30^\circ$，干噪比分别为
 35dB和30dB，快拍数为200。我们选取半阵法的和差波束权作为主阵列静态权向量，此时由广义旁瓣对消器得到的和差波束如
 图\ref{GSC_sigma_delta}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/GSC_sigma_delta.eps}
     \caption{广义旁瓣对消产生的和波束$\Sigma$与差波束$\Delta$}
     \label{GSC_sigma_delta}
@@ -1755,7 +1755,7 @@ $s_a\le s \le s_b$为设计阻塞矩阵所要求的阻带。
 从图\ref{GSC_sigma_delta}中可以看出，和差波束都在旁瓣干扰入射方向，即$-35^\circ$和$30^\circ$处产生了零陷，
 且抑制比与两旁瓣干扰的干噪比相当。与上两节中介绍的静态权方法不同，广义旁瓣对消器的零陷会随着旁瓣干扰的改变而改变，
 并非静态权那样的固定旁瓣抑制比。类似的，我们也可以得到它的单脉冲比曲线，如图\ref{GSC_MRC}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.5]{pic/GSC_MRC.eps}
     \caption{广义旁瓣对消产生的单脉冲比曲线}
     \label{GSC_MRC}
@@ -1810,7 +1810,6 @@ $\bm{B}_a$并用于辅助阵列。
 U. Nickel 在 1993 年将该方法应用到了单脉冲系统中\cite{Nickel_93}。
 该方法的优势在于，不受限于具体的阵列形式，只要能够知道干扰叠加噪声的统计特性，就可以利用该方法进行求解。
 
-\subsection{基本原理}
 我们以一个$M$行$N$列的均匀面阵为例，分析该方法的导出过程。首先对于均匀面阵，我们可以利用式\eqref{data_model}和\eqref{sv_URA}
 得到其接收信号模型
 \begin{equation}\label{ML_data_model}
@@ -2057,29 +2056,10 @@ $\bm{a}(\bm{\theta}_s)\approx\bm{a}(\bm{\theta}_{max})$。并且结合\eqref{ml_
 \end{equation}
 最后利用反三角函数即可估计出期望信号的入射方向$\hat{\bm{\theta}}$。
 
-\subsection{仿真结果}
-考虑一个8阵元的均匀线阵，阵元间距为半波长，阵列的波束指向$\phi_0$为$20^\circ$。
-假设有两个干扰信号——旁瓣干扰和主瓣干扰，入射方向分别为$35^\circ$和$17^\circ$，
-干噪比分别为30dB和35dB。期望信号的信噪比为10dB，快拍数为400，期望信号的入射角度从$15^\circ$变化到$25^\circ$，
-进行1000次统计独立实验。在此条件下，最大似然方法的均方根误差与加权法（Taylor权与Bayliss权）的对比如图\ref{ML_RMSE}所示。
-\begin{figure}[h]
-    \includegraphics[scale=0.5]{pic/ML_RMSE.eps}
-    \caption{最大似然方法与加权法的均方根误差}
-    \label{ML_RMSE}
-\end{figure}
-
-从图\ref{ML_RMSE}中可以看出，由于加权法无法应对主瓣干扰，因此在除去干扰点$17^\circ$附近以外的所有测角区域，
-加权法都失效了，而当期望信号入射角$\phi_s=17^\circ$时，和主瓣干扰重叠，主瓣干扰等效的增强了期望信号的信噪比。
-而对于最大似然方法，它利用协方差矩阵在该点处抑制干扰，当期望信号入射角度与主瓣干扰相同时，被该方法一同抑制，
-此时最大似然方法失效，而在其他测角区域，则可以不受主瓣干扰的影响进行测向。另外，从图\ref{ML_RMSE}中也可以得知，
-该方法能够抑制旁瓣干扰。综上所述，最大似然方法可以同时抑制主旁瓣干扰并进行测向，但当期望信号与主瓣干扰重叠时，
-会一并遭到抑制，从而使得此时的测角精度下降。
-
 \section{MVAM方法}
 本节中，我们介绍的MVAM方法是由A.S. Paine在文献\cite{Paine}中提出的一类自适应方法。
 它利用干扰叠加噪声的协方差矩阵和阵列接收到的数据还原出理想单脉冲比，进而完成自适应测向。
 
-\subsection{基本原理}
 我们同样以$M$行$N$列的均匀面阵为例，解析MVAM方法的一般过程。
 首先信号模型同式\eqref{ML_data_model}一样。我们设单脉冲比为$R$，而无噪声的理想单脉冲比为$R_0$。
 它们由式\eqref{MVAM_MRC}给出。
@@ -2331,17 +2311,6 @@ $\bm{a}(\bm{\theta}_s)\approx\bm{a}(\bm{\theta}_{max})$。并且结合\eqref{ml_
 \end{equation}
 式\eqref{MVAM_beta_solve}和\eqref{MVAM_estimator}中，矩阵$\bm{B}$和$\bm{R}$分别是矩阵$\bm{B}_1$和$\bm{R}_1$的前两行。
 
-\subsection{仿真结果}
-在本节中，仿真条件的设置与4.1.2节相同。同样，我们将MVAM方法与加权法进行对比，它们的均方根误差如图\ref{MVAM_RMSE}所示。
-\begin{figure}[h]
-    \includegraphics[scale=0.5]{pic/MVAM_RMSE.eps}
-    \caption{MVAM方法与加权法的均方根误差}
-    \label{MVAM_RMSE}
-\end{figure}
-
-与最大似然方法类似，从图\ref{MVAM_RMSE}中可知，MVAM方法仍旧能够有效抑制主旁瓣干扰，但当期望信号入射方向接近主瓣干扰时，
-也会受到抑制作用，进而影响测角。
-
 % \section{正交置零主瓣干扰抑制方法}
 % 在上文中，我们介绍了旁瓣对消器用于抑制旁瓣干扰，但在某些单脉冲测向的场景中，
 % 会在和波束的3dB主瓣内存在强干扰，但旁瓣对消器无法处理主瓣干扰。
@@ -2479,7 +2448,6 @@ $\bm{a}(\bm{\theta}_s)\approx\bm{a}(\bm{\theta}_{max})$。并且结合\eqref{ml_
 并以最小均方误差作为目标函数，借助LCMV结构求解差波束权向量。
 改进型方法对约束矩阵做SVD，然后选取部分正奇异值和左右奇异向量以近似原约束矩阵。
 
-\subsection{基本原理}
 我们将以均匀面阵为例，给出该方法的导出过程。
 考虑一个$M$行$N$列的均匀面阵，相邻两行阵元间距均为$d_m$，相邻两列阵元间距为$d_n$，入射信号波长为$\lambda$，
 波束指向为$\bm{\theta}_0=\left[\theta_0,\phi_0\right]^T$。
@@ -2661,32 +2629,6 @@ $\bm{\rho}_a$的子向量定义如下
 在本方法中，由于单脉冲比是预先设定得线性函数，斜率分别为$k_1$，$k_2$和$k_3$，因此不需要进行曲线拟合便可直接用于测向。
 一般情况下，我们可以选取主瓣的3dB宽度边界值作为$\Delta\theta$和$\Delta\phi$求解出自适应差波束权向量。
 
-\subsection{仿真结果}
-本节中的仿真条件与4.1.2节相同，由MVDR和波束权和线性约束差波束权得到的和差自适应波束如图\ref{JLC_sigma_delta}所示。
-\begin{figure}[h]
-    \includegraphics[scale=0.5]{pic/JLC_sigma_delta.eps}
-    \caption{MVDR自适应和波束$\Sigma$与线性约束自适应差波束$\Delta$}
-    \label{JLC_sigma_delta}
-\end{figure}
-
-从图\eqref{JLC_sigma_delta}中我们可以看出，和差波束都在主瓣干扰$17^\circ$和旁瓣干扰$35^\circ$处形成了零陷，以此抑制主旁瓣干扰。
-此时的自适应单脉冲比曲线如图\ref{JLC_MRC}所示。
-\begin{figure}[h]
-    \includegraphics[scale=0.5]{pic/JLC_MRC.eps}
-    \caption{线性约束方法的自适应单脉冲比}
-    \label{JLC_MRC}
-\end{figure}
-
-同样，在图\ref{JLC_MRC}中，主瓣干扰$17^\circ$处出现了零陷，用于抑制主瓣干扰。当期望信号的信噪比为10dB，快拍数为400，
-期望信号的入射角度从$15^\circ$变化到$25^\circ$时，进行1000次统计独立实验，测角均方根误差如图\eqref{JLC_RMSE}所示。
-\begin{figure}[h]
-    \includegraphics[scale=0.5]{pic/JLC_RMSE.eps}
-    \caption{线性约束方法的均方根误差}
-    \label{JLC_RMSE}
-\end{figure}
-
-图\eqref{JLC_RMSE}
-
 \section{SVD-线性约束方法}
 联合线性约束方法可以有效的抑制主旁瓣干扰，并且毋须预先拟合单脉冲曲线就可以直接进行测向。
 但该方法的局限性在于，它只选取了波束指向$\bm{\theta}_0$以及测角区域的边界值（一般为3dB边界）作为约束条件。
@@ -2695,7 +2637,6 @@ $\bm{\rho}_a$的子向量定义如下
 以提高其泛用性，并使得其在远离约束点时仍然能保持较高的测角精度。为简化推导过程，本节中将以均匀线阵为例，
 改进该方法。
 
-\subsection{基本原理}
 首先考虑一个$M$阵元的均匀线阵，其阵元间距为半波长，入射信号的波长为$\lambda$，阵列的波束指向为$\phi_0$。
 要解决单脉冲比曲线线性度下降引起的测角精度下降问题，最直接的方式就是选取更多的约束点，
 使得单脉冲比$f$在每个点上都满足线性关系。但从第二章中的LCMV波束形成器的原理中可知，约束点数会收到阵列自由度的限制，
@@ -2821,6 +2762,67 @@ $\bm{\rho}_a$的子向量定义如下
 
 虽然本节中我们只对均匀线阵的情况进行了推导，但该方法仍旧适用于二维阵列的情况（如均匀面阵），
 其结构与上一节中类似，同样的，我们需要对约束矩阵做SVD并选取较大的正奇异值及其左右奇异向量构成近似解。
+
+\section{各方法的仿真结果对比}
+本节中，我们将本文提出的SVD-线性约束方法与半阵法，加权法，最大似然方法，MVAM方法和线性约束方法进行对比。
+
+仿真条件：20阵元的均匀线阵，阵元间距为半波长，阵列波束指向$\phi_0=0^\circ$，快拍数为200。
+线性约束方法约束点为$[\phi_0-4^\circ,\phi_0,\phi_0+4^\circ]$三个点，SVD-线性约束方法在区间$[\phi_0-4^\circ,\phi_0+4^\circ]$
+内均匀的选取100个点，取归一化后大于-35dB以上的正奇异值及其左右奇异向量，所有性能仿真都是5000次统计独立实验的结果。
+
+无干扰条件下，各个方法的单脉冲曲线对比如图\ref{SVD-JLC_MRC_cmp}所示。
+注意，由于最大似然方法和MVAM方法不是传统意义上的和差波束测向，因此这里不考虑它们的单脉冲比。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/SVD-JLC_MRC_cmp.eps}
+    \caption{各方法的单脉冲曲线对比}
+    \label{SVD-JLC_MRC_cmp}
+\end{figure}
+
+仿真一：期望信号入射方向从$-4^\circ$变化到$4^\circ$，信噪比为15dB，无干扰，
+各方法的测角精度如图\ref{SVD-JLC_RMSE_jamming_free}所示。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/SVD-JLC_RMSE_jamming_free.eps}
+    \caption{无干扰条件下各方法的均方根误差对比}
+    \label{SVD-JLC_RMSE_jamming_free}
+\end{figure}
+从图\ref{SVD-JLC_RMSE_jamming_free}中可以看出，在无干扰条件下，整个测角区间内，
+本方法的测角误差显著小于其余方法，并且不会像3点线性约束方法那样在$\pm2^\circ$到$\pm3^\circ$处误差上升的情况。
+
+仿真二：期望信号入射方向从$-4^\circ$变化到$4^\circ$，信噪比为15dB，
+存在两个旁瓣干扰，其入射角度分别为$-13^\circ$和$13^\circ$，干噪比分别为115dB和105dB，
+各方法的测角精度如图\ref{SVD-JLC_RMSE_SLJ}所示。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/SVD-JLC_RMSE_SLJ.eps}
+    \caption{存在旁瓣干扰时各方法的均方根误差对比}
+    \label{SVD-JLC_RMSE_SLJ}
+\end{figure}
+从图\ref{SVD-JLC_RMSE_SLJ}中可以看出，存在旁瓣干扰的条件下，整个测角区间内，半阵法的测角误差已经显著增大，
+无法处理旁瓣干扰，Taylor加权与Bayliss加权方法误差已经超过 ，
+最大似然与三点约束法尚可保证一定的精度，而本方法的测角误差仍然显著小于其余方法。
+
+仿真三：期望信号入射方向从$-4^\circ$变化到$4^\circ$，信噪比为15dB，存在一个主瓣干扰，
+其入射角度为$-2^\circ$，干噪比为50dB，各方法的测角精度比较如图\ref{SVD-JLC_RMSE_MLJ}所示。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/SVD-JLC_RMSE_MLJ.eps}
+    \caption{存在主瓣干扰时各方法的均方根误差对比}
+    \label{SVD-JLC_RMSE_MLJ}
+\end{figure}
+从图中可以看出，存在主瓣干扰的条件下，整个测角区间内，当期望信号入射角度为$-2^\circ$时，
+主瓣干扰与期望信号的入射相同，使得期望信号的功率与干扰功率叠加，这使得半阵法与加权法这种静态权方法的测角精度在该点处较高，
+而当期望信号入射角度远离干扰方向时，由干扰引起的波束失真使得测角精度显著下降，无法处理主瓣干扰，
+与此相对，其余三种方法都是自适应方法，利用干扰叠加噪声的统计信息在干扰入射角度处形成了零陷，因此同时抑制了期望信号与干扰信号，
+这使得自适应方法在干扰入射方向的误差较大，而在其余测角区间，则能够保证一定的测角精度。
+在此区间内，本方法的测角误差在仍然显著小于最大似然方法，并且不会像3点线性约束方法那样在$2^\circ$到$3^\circ$处误差上升的情况。
+
+仿真四：期望信号入射方向为$2^\circ$，信噪比从-25dB变化到20dB，无干扰，各方法的测角精度随信噪比变化如图\ref{SVD-JLC_RMSE_SNR}所示。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/SVD-JLC_RMSE_SNR.eps}
+    \caption{存在主瓣干扰时各方法的均方根误差对比}
+    \label{SVD-JLC_RMSE_SNR}
+\end{figure}
+从图\ref{SVD-JLC_RMSE_SNR}中可以看出，最大似然方法受信噪比影响较大，由于入射信号方向为$2^\circ$，
+这使得3点约束方法的测角误差显著增大，因为3点约束法没有对区间内部的$2^\circ$处进行线性约束，
+这使得该误差甚至高于半阵法和加权法这种静态方法，而在该条件下，本发明给出的方法仍然保持着相对于其他方法较低的测角误差。
 
 \section{本章小结}
 本章中，我们介绍了四种单脉冲测向方法，并在最后针对联合线性约束方法进行了改进。
@@ -3211,6 +3213,32 @@ Kronecker积的特性，我们实际上可以将信号的极化分量归并称�
 在未知期望信号极化参数的条件下，该方法使用两通道分别求解，并以功率作为权值进行信息融合，保证最终给出一个可接受的结果。
 
 \subsection{仿真结果}
+仿真条件：16阵元的均匀线阵，阵元间距为半波长，每个阵元由一对正交电偶极子构成，分别沿$x$和$y$轴方向，
+如图\ref{dual_ortho_ULA_fig}所示。阵列波束指向$\phi_0=0^\circ$，快拍数为200，采取半阵法作为静态和差波束权进行测向，
+所有性能仿真都是5000次统计独立实验的结果。
+
+仿真一：期望信号入射方向$\phi_s=2^\circ$，极化相位差$\eta_s=\pi/4$，信噪比为15dB，当期望信号的极化辅助角$\gamma_s$从
+$0$变化到$\pi/2$时，水平通道和垂直通道以及双通道融合的测角误差如图\ref{dual_RMSE_gamma}所示。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/dual_RMSE_gamma.eps}
+    \caption{不同极化辅助角各通道及融合结果的均方根误差}
+    \label{dual_RMSE_gamma}
+\end{figure}
+
+从图\ref{dual_RMSE_gamma}中可以看出，当极化辅助角$\gamma_s$接近$0$或者$\pi/2$时，垂直通道和水平通道的极化分量趋近于0，
+等效的使得在此通道上的信噪比急剧下降，从而使得此通道上的测角误差增大。而双通道融合的方法，无论极化辅助角如何变化，
+总能给出一个可接受的结果，当入射信号的极化信息未知时，这样的特性是至关重要的。
+
+仿真二：期望信号入射方向$\phi_s=3^\circ$，极化辅助角$\gamma_s=\pi/3$，极化相位差$\eta_s=\pi/4$，信噪比从0dB变化到20dB，
+此时水平和垂直通道以及双通道融合的均方根误差如图\ref{dual_RMSE_SNR}所示。
+\begin{figure}[H]
+    \includegraphics[scale=0.5]{pic/dual_RMSE_SNR.eps}
+    \caption{不同信噪比各通道及融合结果的均方根误差}
+    \label{dual_RMSE_SNR}
+\end{figure}
+
+从图\ref{dual_RMSE_gamma}中可知，双通道融合的结果总是处于两通道之间的，即融合方法不保证给出最优结果。
+但在实际情况中，期望信号的极化信息往往是未知的，此时融合方法能够给出一个可接受的估计值。
 
 \section{极子摆放方式不同时的极化相控阵单脉冲测向}
 当组成阵列的极子朝向各不相同时，导向向量中的空域时延$\bm{a}_s(\theta,\phi)$无法和极化导致的幅相变化分离，
@@ -3493,7 +3521,7 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
     \end{aligned}
 \end{equation}
 
-在所有的仿真中，均匀圆阵都是由$9$对偶极子组成，且半径为$1m$（如图\ref{polar_circular_array}）。
+仿真条件：在所有的仿真中，均匀圆阵都是由$9$对偶极子组成，且半径为$1m$（如图\ref{polar_circular_array}）。
 期望信号为300MHz的远场窄带信号，入射方位角$\theta_s=42^\circ$，俯仰角为$\phi_s=48^\circ$。
 而阵列波束指向$(\theta_0,\phi_0)$为$(45^\circ,45^\circ)$。快拍数$N$为200.信噪比为15dB。
 结果中的每次估计量都是由$L=1000$次蒙特卡洛实验得到的。其测角性能由均方根误差（RMSE）衡量，
@@ -3505,11 +3533,9 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 \end{equation}
 上式中，$(\cdot)_l$表示第$l$次蒙特卡洛实验的估计结果。
 
-仿真A：无干扰时的测向性能对比
-
-在第一个仿真中，取期望信号的极化相位差$\eta_s=0$。极化辅助角$\gamma_s$从$0$变化到$\pi/2$。
+仿真一：取期望信号的极化相位差$\eta_s=0$。极化辅助角$\gamma_s$从$0$变化到$\pi/2$，无干扰，
 各算法测角误差对比如图\ref{Polar_RMSE_jammer_free}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \subfloat[]{
         \label{Polar_RMSE_jammer_free_a}
         \includegraphics[scale=0.285]{pic/azimuth_RMSE_jammer_free.eps}
@@ -3528,12 +3554,10 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 接收到的信号功率变得微弱，降低了信噪比。作为对照，我们提出的方法在极化辅助角$\gamma_s$
 的整个定义域内都能得到较为理想的测向结果。
 
-仿真B：存在一旁瓣干扰时的测向性能对比
-
-在本次仿真中，我们探究存在旁瓣干扰时各算法的性能，考虑一个旁瓣干扰，以方位角$\theta_j=25^\circ$，
+仿真二：在本次仿真中，我们探究存在旁瓣干扰时各算法的性能，考虑一个旁瓣干扰，以方位角$\theta_j=25^\circ$，
 俯仰角$\phi_j=25^\circ$入射到该阵列上，它的极化辅助角$\gamma_j$为$40^\circ$，极化相位差$\eta_j$为$30^\circ$，
 干噪比为55dB，期望信号与仿真A中相同。仿真结果对比如图\ref{Polar_RMSE_SLJ}所示。
-\begin{figure}[h]
+\begin{figure}[H]
     \subfloat[]{
         \label{Polar_RMSE_SLJ_a}
         \includegraphics[scale=0.285]{pic/azimuth_RMSE_SLJ.eps}
@@ -3551,11 +3575,9 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 而最大似然方法虽然能够有效的抑制旁瓣干扰，但当$\gamma_s$趋近于0时，它还是会失效。作为对比，我们的方法能够处理
 旁瓣干扰，并且在$\gamma_s$的整个定义域上都有较为理想的结果。
 
-仿真C：无干扰时的极化参数估计性能
-
-在仿真C中，我们探究无干扰时本方法的极化参数估计性能。期望信号的极化相位差$\eta_s=0$，极化辅助角$\gamma_s$从
-$0$变化到$\pi/2$，其余条件不变。极化参数的估计性能如图\ref{Polar_args_RMSE}所示。
-\begin{figure}[h]
+仿真三：我们探究无干扰时本方法的极化参数估计性能。期望信号的极化相位差$\eta_s=0$，极化辅助角$\gamma_s$从
+$0$变化到$\pi/2$，无干扰，其余条件不变。极化参数的估计性能如图\ref{Polar_args_RMSE}所示。
+\begin{figure}[H]
     \subfloat[]{
         \label{Polar_args_RMSE_a}
         \includegraphics[scale=0.285]{pic/gamma_hat.eps}
@@ -3571,6 +3593,25 @@ $0$变化到$\pi/2$，其余条件不变。极化参数的估计性能如图\ref
 从图\ref{Polar_args_RMSE}中我们可以看出，在大部分情况下，最小二乘解都可以给出可接受的极化参数估计结果，
 但是当极化辅助角$\gamma_s$接近0或者$\pi/2$时，期望信号的极化向量$\bm{h}$中有一个元素会趋近于0，
 这使得式\eqref{polar_args_hat_arc}退化，无法估计出正确的极化相位差$\hat{\eta}_s$。
+
+仿真四：我们探究存在旁瓣干扰时本方法的极化参数估计性能。期望信号的极化相位差$\eta_s=0$，极化辅助角$\gamma_s$从
+$0$变化到$\pi/2$，存在一旁瓣干扰，方位角为$25^\circ$，俯仰角为$-25^\circ$，极化辅助角为$40^\circ$，极化相位差为$30^\circ$，
+其余条件不变。极化参数的估计性能如图\ref{Polar_args_RMSE_SLJ}所示。
+\begin{figure}[H]
+    \subfloat[]{
+        \label{Polar_args_RMSE_a_SLJ}
+        \includegraphics[scale=0.285]{pic/gamma_hat_SLJ.eps}
+    }
+    \subfloat[]{
+        \label{Polar_args_RMSE_b_SLJ}
+        \includegraphics[scale=0.285]{pic/eta_hat_SLJ.eps}
+    }
+    \caption{存在旁瓣干扰时的极化参数估计RMSE。(a)极化辅助角RMSE；(b)极化相位差RMSE}
+    \label{Polar_args_RMSE_SLJ}
+\end{figure}
+
+与仿真三类似，在大部分情况下，最小二乘解都可以给出可接受的极化参数估计结果，
+但是当极化辅助角$\gamma_s$接近0或者$\pi/2$时，无法估计出正确的极化相位差$\hat{\eta}_s$。
 而其他传统单脉冲测向方法无法估计极化参数。
 
 \section{本章小结}
@@ -3642,7 +3683,9 @@ Kronecker积的形式，这样就可以将不同指向的几组极子分开，�
 可能会得到性能更优的结果。
 
 \thesisacknowledgement
-在攻读硕士学位期间，首先衷心感谢我的导师XXX教授
+在攻读硕士学位期间，首先衷心感谢我的导师谢菊兰教授的悉心教导，帮助我培养科研思维，完善自身的科研素养。
+其次感谢“相控阵与自适应信号处理”团队的全体师生，帮助我攻克科研工作中的一个又一个难题。
+最后感谢电子科技大学对我三年的培养，“求实求真，大气大为”的校训必当铭记在心，直至它成为我的墓志铭。
 
 % \thesisappendix
 
