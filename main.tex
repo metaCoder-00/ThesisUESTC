@@ -2870,15 +2870,15 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 俯仰角$\phi_s$从$41^\circ$变化到$49^\circ$，所有性能仿真都是1000次统计独立实验的结果。
 
 最大似然方法的测角误差如图\ref{ml_rmse}所示，MVAM方法的测角误差如图\ref{mvam_rmse}所示，
-线性约束方法的测角误差如图\ref{jlc_rmse}所示。
+线性约束方法的测角误差如图\ref{jlc_rmse}所示，SVD-线性约束方法的测角误差如图\ref{svd_jlc_rmse}所示。
 \begin{figure}[H]
     \subfloat[]{
         \label{ml_azm_rmse}
-        \includegraphics[scale=0.285]{pic/ml_azm_rmse.eps}
+        \includegraphics[scale=0.288]{pic/ml_azm_rmse.eps}
     }
     \subfloat[]{
         \label{ml_elv_rmse}
-        \includegraphics[scale=0.285]{pic/ml_elv_rmse.eps}
+        \includegraphics[scale=0.288]{pic/ml_elv_rmse.eps}
     }
     \caption{存在主旁瓣干扰时最大似然方法方向估计的RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{ml_rmse}
@@ -2887,11 +2887,11 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 \begin{figure}[H]
     \subfloat[]{
         \label{mvam_azm_rmse}
-        \includegraphics[scale=0.285]{pic/mvam_azm_rmse.eps}
+        \includegraphics[scale=0.288]{pic/mvam_azm_rmse.eps}
     }
     \subfloat[]{
         \label{mvam_elv_rmse}
-        \includegraphics[scale=0.285]{pic/mvam_elv_rmse.eps}
+        \includegraphics[scale=0.288]{pic/mvam_elv_rmse.eps}
     }
     \caption{存在主旁瓣干扰时MVAM方法方向估计的RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{mvam_rmse}
@@ -2900,11 +2900,11 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 \begin{figure}[H]
     \subfloat[]{
         \label{jlc_azm_rmse}
-        \includegraphics[scale=0.285]{pic/jlc_azm_rmse.eps}
+        \includegraphics[scale=0.288]{pic/jlc_azm_rmse.eps}
     }
     \subfloat[]{
         \label{jlc_elv_rmse}
-        \includegraphics[scale=0.285]{pic/jlc_elv_rmse.eps}
+        \includegraphics[scale=0.288]{pic/jlc_elv_rmse.eps}
     }
     \caption{存在主旁瓣干扰时线性约束方法方向估计的RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{jlc_rmse}
@@ -2913,11 +2913,11 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 \begin{figure}[H]
     \subfloat[]{
         \label{svd_jlc_azm_rmse}
-        \includegraphics[scale=0.285]{pic/svd_jlc_azm_rmse.eps}
+        \includegraphics[scale=0.288]{pic/svd_jlc_azm_rmse.eps}
     }
     \subfloat[]{
         \label{svd_jlc_elv_rmse}
-        \includegraphics[scale=0.285]{pic/svd_jlc_elv_rmse.eps}
+        \includegraphics[scale=0.288]{pic/svd_jlc_elv_rmse.eps}
     }
     \caption{存在主旁瓣干扰时SVD-线性约束方法方向估计的RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{svd_jlc_rmse}
@@ -2933,11 +2933,11 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 \begin{figure}[H]
     \subfloat[]{
         \label{jlc_azm_rmse_slj}
-        \includegraphics[scale=0.285]{pic/jlc_azm_rmse_slj.eps}
+        \includegraphics[scale=0.288]{pic/jlc_azm_rmse_slj.eps}
     }
     \subfloat[]{
         \label{svd_jlc_azm_rmse_slj}
-        \includegraphics[scale=0.285]{pic/svd_jlc_azm_rmse_slj.eps}
+        \includegraphics[scale=0.288]{pic/svd_jlc_azm_rmse_slj.eps}
     }
     \caption{存在旁瓣干扰时线性约束方法和SVD-线性约束方法方位角估计的RMSE。(a)线性约束方法；(b)SVD-线性约束方法}
     \label{rmse_slj_azm}
@@ -2946,11 +2946,11 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 \begin{figure}[H]
     \subfloat[]{
         \label{jlc_elv_rmse_slj}
-        \includegraphics[scale=0.285]{pic/jlc_elv_rmse_slj.eps}
+        \includegraphics[scale=0.288]{pic/jlc_elv_rmse_slj.eps}
     }
     \subfloat[]{
         \label{svd_jlc_elv_rmse_slj}
-        \includegraphics[scale=0.285]{pic/svd_jlc_elv_rmse_slj.eps}
+        \includegraphics[scale=0.288]{pic/svd_jlc_elv_rmse_slj.eps}
     }
     \caption{存在旁瓣干扰时线性约束方法和SVD-线性约束方法俯仰角估计的RMSE。(a)线性约束方法；(b)SVD-线性约束方法}
     \label{rmse_slj_elv}
@@ -3732,11 +3732,11 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 \begin{figure}[H]
     \subfloat[]{
         \label{Polar_RMSE_jammer_free_a}
-        \includegraphics[scale=0.285]{pic/azimuth_RMSE_jammer_free.eps}
+        \includegraphics[scale=0.288]{pic/azimuth_RMSE_jammer_free.eps}
     }
     \subfloat[]{
         \label{Polar_RMSE_jammer_free_b}
-        \includegraphics[scale=0.285]{pic/elevation_RMSE_jammer_free.eps}
+        \includegraphics[scale=0.288]{pic/elevation_RMSE_jammer_free.eps}
     }
     \caption{无干扰条件下方向估计的RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{Polar_RMSE_jammer_free}
@@ -3754,11 +3754,11 @@ $0\le\gamma\le\pi/2$和$-\pi\le\eta<\pi$，所以我们可以用反三角函数�
 \begin{figure}[H]
     \subfloat[]{
         \label{Polar_RMSE_SLJ_a}
-        \includegraphics[scale=0.285]{pic/azimuth_RMSE_SLJ.eps}
+        \includegraphics[scale=0.288]{pic/azimuth_RMSE_SLJ.eps}
     }
     \subfloat[]{
         \label{Polar_RMSE_SLJ_b}
-        \includegraphics[scale=0.285]{pic/elevation_RMSE_SLJ.eps}
+        \includegraphics[scale=0.288]{pic/elevation_RMSE_SLJ.eps}
     }
     \caption{存在旁瓣干扰时的方向估计RMSE。(a)方位角RMSE；(b)俯仰角RMSE}
     \label{Polar_RMSE_SLJ}
@@ -3774,11 +3774,11 @@ $0$变化到$\pi/2$，无干扰，其余条件不变。极化参数的估计性�
 \begin{figure}[H]
     \subfloat[]{
         \label{Polar_args_RMSE_a}
-        \includegraphics[scale=0.285]{pic/gamma_hat.eps}
+        \includegraphics[scale=0.288]{pic/gamma_hat.eps}
     }
     \subfloat[]{
         \label{Polar_args_RMSE_b}
-        \includegraphics[scale=0.285]{pic/eta_hat.eps}
+        \includegraphics[scale=0.288]{pic/eta_hat.eps}
     }
     \caption{无干扰时的极化参数估计RMSE。(a)极化辅助角RMSE；(b)极化相位差RMSE}
     \label{Polar_args_RMSE}
@@ -3794,11 +3794,11 @@ $0$变化到$\pi/2$，存在一旁瓣干扰，方位角为$25^\circ$，俯仰角
 \begin{figure}[H]
     \subfloat[]{
         \label{Polar_args_RMSE_a_SLJ}
-        \includegraphics[scale=0.285]{pic/gamma_hat_SLJ.eps}
+        \includegraphics[scale=0.288]{pic/gamma_hat_SLJ.eps}
     }
     \subfloat[]{
         \label{Polar_args_RMSE_b_SLJ}
-        \includegraphics[scale=0.285]{pic/eta_hat_SLJ.eps}
+        \includegraphics[scale=0.288]{pic/eta_hat_SLJ.eps}
     }
     \caption{存在旁瓣干扰时的极化参数估计RMSE。(a)极化辅助角RMSE；(b)极化相位差RMSE}
     \label{Polar_args_RMSE_SLJ}
