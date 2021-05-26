@@ -1,7 +1,7 @@
 
 \documentclass[master]{thesis-uestc}
 
-\title{数字相控阵单脉冲测向方法研究}{The Research on Monopulse estimation for 
+\title{数字相控阵单脉冲测角方法研究}{The Research on Monopulse Angle Measurement for 
 Digital Phased Array}
 
 \author{邓宇昊}{Yuhao Deng}
@@ -1368,7 +1368,7 @@ $\phi_j=20^\circ$，干噪比JNR从-20dB变化到60dB，假定快拍数为200，
 对于该优化问题，向量$\bm{u}_k(i)$由两部分构成：一部分表示$P$组天线的权值；另一部分表示$N$长的天线。即
 \begin{equation}
     \begin{aligned}
-        \bm{u}_k(i) = \left[g_1,\cdots,g_P,c_1,\cdots,C_N\right]^T
+        \bm{u}_k(i) = \left[g_1,\cdots,g_P,c_1,\cdots,c_N\right]^T
     \end{aligned}
 \end{equation}
 另外，交叉操作$\times$的定义如下
@@ -3031,7 +3031,7 @@ $[\phi_0-\Delta\phi,\phi_0+\Delta\phi]$这个二维矩形区域内均匀选择10
 最大似然方法假定各阵元的噪声均为独立同分布的复高斯白噪声，由此得出关于期望信号入射方向的似然函数。
 然后利用牛顿法对该似然函数进行求解，最终得到期望信号入射方向的估计值。
 并且该方法对海森矩阵——即对数似然函数的二阶导数进行了近似，使得其计算量大大减小。
-MVAM方法预设理想的单脉冲比，然后在波束指向处进行一阶泰勒展开，进过一系列化简后，
+MVAM方法预设理想的单脉冲比，然后在波束指向处进行一阶泰勒展开，经过一系列化简后，
 从阵列的接收信息中重构出理想单脉冲比，进一步得到入射方向的估计值。
 线性约束方法借助了MVDR波束形成和LCVM结构，首先利用MVDR方法在波束指向处形成自适应和波束，
 然后在波束指向及测角区间边界点处约束单脉冲比，并借助LCMV结构和拉格朗日乘子法，求解得出自适应差波束权向量。
@@ -3502,7 +3502,7 @@ $0$变化到$\pi/2$时，水平通道和垂直通道以及双通道融合的测�
 \begin{equation}\label{polar_lf_opt}
     \begin{aligned}
         &\max_{\bm{\theta}} ~ \mathcal{L}(\bm{\theta}) \\
-        &\text{s.t.} ~ -\pi\leqslant\theta, 0\leqslant\phi\leqslant\pi
+        &\text{s.t.} ~ -\pi\leqslant\theta<\pi, 0\leqslant\phi\leqslant\pi
     \end{aligned}
 \end{equation}
 
